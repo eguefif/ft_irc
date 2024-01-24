@@ -1,6 +1,19 @@
-#include <iostream>
+#include "../includes/Server.hpp"
 
-int main()
+void	app(std::string port, std::string pass);
+
+int main(int argc, char **argv)
 {
-	std::cout << "Welcome to ft_irc" << std::endl;
+	if (argc != 3)
+		std::cerr << "USAGE: ircserver PORT PASS" << std::endl;
+	else
+		app(argv[1], argv[2]);
 }
+
+void	app(std::string port, std::string pass)
+{
+	Server server(port, pass);
+
+	server.run();
+}
+
