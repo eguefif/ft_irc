@@ -1,8 +1,9 @@
 #pragma once
 #include <iostream>
 #include <exception>
-#include <ctime>
-
+#include <time.h>
+#include <sstream>
+#include <iomanip>
 
 class Log
 {

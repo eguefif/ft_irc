@@ -30,7 +30,7 @@ test: all
 	#cd test
 	#pytest
 	#pgrep ircserv | xargs kill -9
-	./test.sh
+	./test/make_test.sh
 
 clean:
 	rm -rf $(OBJ)
