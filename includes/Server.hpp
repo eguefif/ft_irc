@@ -1,12 +1,16 @@
 #pragma once
+
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "Log.hpp"
 #include <poll.h>
+#include <map>
+
+#include "../includes/Log.hpp"
+#include "../includes/Client.hpp"
 
 #define SERV_MAX_CLIENTS 100
 
@@ -21,6 +25,7 @@ class Server
 		void run();
 	
 	private:
+		std::map<int, Client*> clientList;
 		int port;
 		std::string pass;
 		int serverSocket;

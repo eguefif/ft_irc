@@ -3,9 +3,9 @@ NAME=ircserv
 CC=c++
 CFLAGS = -Wall -Wextra -Werror #-std=c++98
 
-_INC = Log.hpp Server.hpp
+_INC = Log.hpp Server.hpp Client.hpp
 
-_SRC = main.cpp Server.cpp Log.cpp
+_SRC = main.cpp Server.cpp Log.cpp Client.cpp
 
 _OBJ = $(_SRC:.cpp=.o)
 SDIR = ./src/

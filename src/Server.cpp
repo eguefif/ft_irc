@@ -42,7 +42,7 @@ int	Server::initConnection(struct sockaddr_in &address)
 		exit(1);
 	}
 	address.sin_family = AF_INET;
-	if (!inet_aton("127.0.0.1", &(address.sin_addr)))
+	if (!inet_aton("0.0.0.0", &(address.sin_addr)))
 	{
 		Log::err("invalid IP address", 0);
 		exit(1);
@@ -76,6 +76,19 @@ void Server::run()
 		{
 			this->newConnection();
 		}
+		for(nfds_t i = 0; i < this->numSockets; ++i)
+		{
+			if (this->pfds[i].revents & POLLOUT)
+			{
+				std::string message;
+				while((message = this->clientList.find(pfds[i].fd)->second->getMsg()) != "")
+				{
+					write(pfds[i].fd, message.c_str(), message.length());
+					write(pfds[i].fd, "\n", 1);
+
+				}
+			}
+		}
 	}
 	close(this->serverSocket);
 }
@@ -90,13 +103,15 @@ void Server::initPoll()
 void Server::newConnection()
 {
 	int	fd = 0;
-	struct sockaddr address;
+	struct sockaddr_in address;
 	socklen_t addrlen = sizeof(sockaddr);
 
 	fd = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
-	std::string str(inet_ntoa(this->addressServer.sin_addr));
-	Log::out("new connection with " + str + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
+	std::string clientAddress(inet_ntoa(address.sin_addr));
+	Log::out("new connection with " + clientAddress + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
 	this->pfds[this->numSockets].fd = fd;
 	this->pfds[this->numSockets].events = POLLIN | POLLOUT;
+	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
+	this->clientList.find(fd)->second->addMsg("Welcome to IRC");
 	this->numSockets++;
 }
