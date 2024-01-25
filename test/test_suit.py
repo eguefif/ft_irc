@@ -1,18 +1,21 @@
 import pytest
-import asyncio
+import socket
 
-async def tcp_connection():
-    try:
-        reader, writer = await asyncio.open_connection('127.0.0.1', 6667)
-    except Exception as e:
-        print("exception: ", e)
-    writer.close()
-    await writer.wait_closed()
+HOST = "127.0.0.1"
+PORT = 6670
 
-@pytest.mark.asyncio
-async def test_connection():
-    asyncio.run(tcp_connection())
-    with open("ft_irc.log", "r") as file:
+def tcp_connection():
+    addr = (HOST, PORT)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setblocking(False)
+    sock.connect_ex(addr)
+    sock.close()
+
+def test_connection():
+    tcp_connection()
+    with open("../ft_irc.log", "r") as file:
         content = file.readlines()
-    assert content[0] == "new connection with 127.0.0.1:6667"
-
+    assert content, "nothing in log file"
+    print(content)
+    if content:
+        assert content[0].strip() == f"new connection with {HOST}:{PORT}"

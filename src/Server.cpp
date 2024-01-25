@@ -21,7 +21,7 @@ int Server::initConnection(struct sockaddr_in &address)
 	int newSocket;
 	int opt = 1;
 
-	if ((newSocket = socket(AF_LOCAL, SOCK_STREAM, 0)) < 0)
+	if ((newSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		Log::err("socket failed", 0);
 		exit(1);
@@ -54,11 +54,15 @@ int Server::initConnection(struct sockaddr_in &address)
 void Server::run()
 {
 	struct sockaddr address;
+	int i = 0;;
 	socklen_t addrlen = sizeof(sockaddr);
+
 	while (true)
 	{
-		accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
+		i = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
 		std::string str(inet_ntoa(this->addressServer.sin_addr));
 		Log::out("new connection with " + str + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
+		close(i);
 	}
+	close(this->serverSocket);
 }

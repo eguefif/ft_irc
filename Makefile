@@ -1,7 +1,7 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror #-std=c++98
 
 _INC = Log.hpp Server.hpp
 
@@ -26,10 +26,11 @@ $(ODIR)%.o: $(SDIR)%.cpp
 .PHONY: fclean clean re all obj_dir
 
 test: all
-	./ircserv 6667 test &> ft_irc.log &
-	cd test
-	pytest
-	pgrep ircserv | xargs kill -9
+	#./ircserv 6667 test &> ft_irc.log &
+	#cd test
+	#pytest
+	#pgrep ircserv | xargs kill -9
+	./test.sh
 
 clean:
 	rm -rf $(OBJ)
