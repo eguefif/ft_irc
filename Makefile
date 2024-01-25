@@ -26,7 +26,7 @@ $(ODIR)%.o: $(SDIR)%.cpp
 .PHONY: fclean clean re all obj_dir
 
 test: all
-	./ircserv 6668 test & > ft_irc.log
+	./ircserv 6667 test &> ft_irc.log &
 	cd test
 	pytest
 	pgrep ircserv | xargs kill -9

@@ -21,29 +21,32 @@ int Server::initConnection(struct sockaddr_in &address)
 	int newSocket;
 	int opt = 1;
 
-	if ((newSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((newSocket = socket(AF_LOCAL, SOCK_STREAM, 0)) < 0)
 	{
 		Log::err("socket failed", 0);
+		exit(1);
 	}
 	if (setsockopt(newSocket, SOL_SOCKET,
 				SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 	{
 		Log::err("setsockopt failed", 0);
+		exit(1);
 	}
 	address.sin_family = AF_INET;
 	if (!inet_aton("127.0.0.1", &(address.sin_addr)))
 	{
 		Log::err("invalid IP address", 0);
+		exit(1);
 	}
 	address.sin_port = htons(this->port);
 	if (bind(newSocket, (struct sockaddr *) &address, sizeof(address)) < 0)
 	{
-		std::cout << errno << std::endl;
 		Log::err("bind failed", 0);
 	}
 	if (listen(newSocket, 10) < 0)
 	{
 		Log::err("listen failed", 0);
+		exit(1);
 	}
 	return newSocket;
 }
