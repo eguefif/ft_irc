@@ -59,3 +59,17 @@ async def test_client_welcome_msg():
     writer.close()
     await writer.wait_closed()
     assert data == "Welcome to IRC\n"
+
+@pytest.mark.asyncio
+async def test_commandes():
+    reader, writer = await asyncio.open_connection(HOST, PORT)
+    writer.write(b"NICK test")
+    await writer.drain()
+    with open("../ft_irc.log", "r") as file:
+        content = file.readlines()
+    assert content, "nothing in log file"
+    if content:
+        to_cmp = content[0].strip()
+        to_cmp = to_cmp.split("] ")
+        assert to_cmp[0] == f"new user nickname test"
+    clean_log_file()

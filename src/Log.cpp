@@ -1,4 +1,4 @@
-#include "../includes/Log.hpp"
+#include "Log.hpp"
 
 std::string getTimeStamp();
 

@@ -1,4 +1,4 @@
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 
 Server::Server(const std::string &pPort, const std::string &pPass)
 {
@@ -78,6 +78,13 @@ void Server::run()
 		}
 		for(nfds_t i = 0; i < this->numSockets; ++i)
 		{
+			if (this->pfds[i].revents & POLLIN)
+			{
+				
+			}
+		}
+		for(nfds_t i = 0; i < this->numSockets; ++i)
+		{
 			if (this->pfds[i].revents & POLLOUT)
 			{
 				std::string message;
@@ -85,7 +92,6 @@ void Server::run()
 				{
 					write(pfds[i].fd, message.c_str(), message.length());
 					write(pfds[i].fd, "\n", 1);
-
 				}
 			}
 		}

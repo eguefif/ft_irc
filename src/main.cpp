@@ -1,4 +1,4 @@
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 
 void	app(std::string port, std::string pass);
 
