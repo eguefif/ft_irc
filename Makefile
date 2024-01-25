@@ -1,11 +1,11 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror #-std=c++98
 
-_INC =
+_INC = Log.hpp Server.hpp
 
-_SRC = main.cpp
+_SRC = main.cpp Server.cpp Log.cpp
 
 _OBJ = $(_SRC:.cpp=.o)
 SDIR = ./src/
@@ -15,20 +15,27 @@ OBJ = $(addprefix $(ODIR), $(_OBJ))
 SRC = $(addprefix $(SDIR), $(_SRC))
 INC = $(addprefix $(IDIR), $(_INC))
 
-all: obj_dir $(NAME)
+all: obj_dir $(NAME) 
 
-$(NAME): $(OBJ)
-	$(CC) $^ -o $@ $(CFLAGS)
+$(NAME): $(OBJ) $(INC)
+	$(CC) $(OBJ) -o $@ $(CFLAGS)
 
 $(ODIR)%.o: $(SDIR)%.cpp
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 .PHONY: fclean clean re all obj_dir
 
+test: all
+	#./ircserv 6667 test &> ft_irc.log &
+	#cd test
+	#pytest
+	#pgrep ircserv | xargs kill -9
+	./test.sh
+
 clean:
 	rm -rf $(OBJ)
 
-flcean: clean
+fclean: clean
 	rm -rf $(NAME)
 
 re: fclean all
