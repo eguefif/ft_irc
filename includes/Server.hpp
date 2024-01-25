@@ -6,12 +6,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "Log.hpp"
+#include <poll.h>
+
+#define SERV_MAX_CLIENTS 100
 
 class Server
 {
 	public:
 		Server() {};
-		~Server() {};
+		~Server();
 
 		Server(const std::string &pPort, const std::string &pPass);
 
@@ -21,9 +24,14 @@ class Server
 		int port;
 		std::string pass;
 		int serverSocket;
+		nfds_t numSockets;
 		struct sockaddr_in addressServer;
+		struct pollfd *pfds;
 
-		int initConnection(struct sockaddr_in &address);
 		Server(const Server &other);
 		Server &operator=(const Server &other);
+
+		int initConnection(struct sockaddr_in &address);
+		void newConnection();
+		void initPoll();
 };

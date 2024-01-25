@@ -3,6 +3,7 @@
 Server::Server(const std::string &pPort, const std::string &pPass)
 {
 	this->pass = pPass;
+	this->numSockets = 0;
 	try
 	{
 		this->port = std::stoi(pPort);
@@ -13,10 +14,18 @@ Server::Server(const std::string &pPort, const std::string &pPass)
 	}
 	if (port < 0 || port > 49151)
 		Log::err("port is out of range [0;49151]", 0);
-	serverSocket = Server::initConnection(this->addressServer);
+	serverSocket = this->initConnection(this->addressServer);
+	this->initPoll();
 }
 
-int Server::initConnection(struct sockaddr_in &address)
+Server::~Server()
+{
+	for (nfds_t i = 0; i < this->numSockets; ++i)
+		close(this->pfds[i].fd);
+	delete[] this->pfds;
+}
+
+int	Server::initConnection(struct sockaddr_in &address)
 {
 	int newSocket;
 	int opt = 1;
@@ -42,27 +51,52 @@ int Server::initConnection(struct sockaddr_in &address)
 	if (bind(newSocket, (struct sockaddr *) &address, sizeof(address)) < 0)
 	{
 		Log::err("bind failed", 0);
+		exit(1);
 	}
 	if (listen(newSocket, 10) < 0)
 	{
 		Log::err("listen failed", 0);
 		exit(1);
 	}
+	this->numSockets++;
 	return newSocket;
 }
 
 void Server::run()
 {
-	struct sockaddr address;
-	int i = 0;;
-	socklen_t addrlen = sizeof(sockaddr);
 
 	while (true)
 	{
-		i = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
-		std::string str(inet_ntoa(this->addressServer.sin_addr));
-		Log::out("new connection with " + str + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
-		close(i);
+		if (poll(this->pfds, this->numSockets, -1) < 0)
+		{
+			Log::err("poll failure", 0);
+			exit(1);
+		}
+		if (this->pfds[0].revents & POLLIN)
+		{
+			this->newConnection();
+		}
 	}
 	close(this->serverSocket);
+}
+
+void Server::initPoll()
+{
+	this->pfds = new pollfd[SERV_MAX_CLIENTS]; 
+	pfds[0].fd = this->serverSocket;
+	pfds[0].events = POLLIN;
+}
+
+void Server::newConnection()
+{
+	int	fd = 0;
+	struct sockaddr address;
+	socklen_t addrlen = sizeof(sockaddr);
+
+	fd = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
+	std::string str(inet_ntoa(this->addressServer.sin_addr));
+	Log::out("new connection with " + str + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
+	this->pfds[this->numSockets].fd = fd;
+	this->pfds[this->numSockets].events = POLLIN | POLLOUT;
+	this->numSockets++;
 }
