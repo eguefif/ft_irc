@@ -34,4 +34,4 @@ flcean: clean
 re: fclean all
 
 obj_dir:
-	mkdir -p $(ODIR)
+	@mkdir -p $(ODIR)
