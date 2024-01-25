@@ -44,3 +44,18 @@ async def test_multiple_connection():
             to_cmp = to_cmp.split("] ")
             assert to_cmp[1] == f"new connection with {HOST}:{PORT}"
     clean_log_file()
+
+@pytest.mark.asyncio
+async def test_client_welcome_msg():
+    reader, writer = await asyncio.open_connection(HOST, PORT)
+    data = ""
+    try:
+        async with asyncio.timeout(1):
+            data = await reader.readuntil(separator=b'\n')
+    except TimeoutError:
+        assert len(data), "Timeout"
+        return
+    data = data.decode()
+    writer.close()
+    await writer.wait_closed()
+    assert data == "Welcome to IRC\n"
