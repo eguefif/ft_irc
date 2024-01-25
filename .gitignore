@@ -2,6 +2,8 @@
 *.swo
 *.o
 
+ircserv
+
 # python stuff
 __pycache__/
 *.py[cod]
