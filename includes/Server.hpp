@@ -1,21 +1,25 @@
 #pragma once
 
-#include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <poll.h>
-#include <map>
-#include <vector>
 
-#include "Log.hpp"
+#include <iostream>
+#include <vector>
+#include <map>
+
 #include "Client.hpp"
+#include "ACmd.hpp"
+#include "Log.hpp"
 
 #define SERV_MAX_CLIENTS 100
 #define MAX_MSG_SIZE 512
 
+ACmd *cmdFactory(std::string cmd, int senderFd);
 class Server
 {
 	public:

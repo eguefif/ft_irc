@@ -1,14 +1,12 @@
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress, const int &pFd) :
-								address(pAddress), cmdGenerator(new CommandGenerator())
+Client::Client(const std::string &pAddress) :
+								address(pAddress) 
 {
-	this->cmdGenerator->setFd(pFd);	
 }
 
 Client::~Client()
 {
-	delete this->cmdGenerator;
 }
 
 void Client::addMsg(const std::string &msg)
@@ -26,7 +24,10 @@ std::string Client::getMsg()
 	return retval;
 }
 
-ACmd *Client::updateCmd(const std::string &message)
+std::string Client::updateCmd(const std::string &message)
 {
-	return this->cmdGenerator->update(message);
+	this->currCmd += message;
+	if (this->currCmd[this->currCmd.length() - 1] == '\n' || this->currCmd.length() >= 512)
+		return (this->currCmd);
+	return "";
 }

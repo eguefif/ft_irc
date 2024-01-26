@@ -3,27 +3,24 @@
 #include <queue>
 #include <string>
 
-#include "CommandGenerator.hpp"
-#include "ACmd.hpp"
-
-class CommandGenerator;
+#include "Log.hpp"
 
 class Client
 {
 	public:
-		Client(const std::string &pAddress, const int &pFd);
+		Client(const std::string &pAddress);
 		~Client();
 		void addMsg(const std::string &msg);
 		std::string getMsg();
 
-		ACmd *updateCmd(const std::string &message);
+		std::string updateCmd(const std::string &message);
 
 	private:
 		Client();
 		Client	&operator=(const Client &other);
 		Client(const Client &other);
 
+		std::string	currCmd;
 		const std::string address;
 		std::queue<std::string> outputQueue;
-		CommandGenerator *cmdGenerator;
 };

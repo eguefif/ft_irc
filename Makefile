@@ -1,11 +1,11 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror #-std=c++98
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 
-_INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp CommandGenerator.hpp
+_INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp
 
-_SRC = main.cpp Server.cpp Client.cpp Log.cpp ACmd.cpp CmdNick.cpp CommandGenerator.cpp
+_SRC = main.cpp Server.cpp Client.cpp Log.cpp ACmd.cpp CmdNick.cpp cmdFactory.cpp
 
 _OBJ = $(_SRC:.cpp=.o)
 SDIR = ./src/

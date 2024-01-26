@@ -76,24 +76,28 @@ void Server::run()
 		{
 			this->newConnection();
 		}
-		for(nfds_t i = 0; i < this->numSockets; ++i)
+		for(nfds_t i = 1; i < this->numSockets; ++i)
 		{
 			if (this->pfds[i].revents & POLLIN)
 			{
-				ACmd *cmdTmp = 0;
+				std::string cmdTmp = "";
 				char buffer[MAX_MSG_SIZE];
 
-				while (read(this->pfds[i].fd, buffer, MAX_MSG_SIZE))
+				read(this->pfds[i].fd, buffer, MAX_MSG_SIZE);
+//				while (read(this->pfds[i].fd, buffer, MAX_MSG_SIZE))
 					cmdTmp = this->clientList.find(this->pfds[i].fd)->second->updateCmd(buffer);
-				if (cmdTmp)
-					this->cmdList.push_back(cmdTmp);
+				if (cmdTmp.length() != 0)
+					this->cmdList.push_back(cmdFactory(cmdTmp, this->pfds[i].fd));
 			}
 		}
 		for (std::vector<ACmd *>::iterator it = this->cmdList.begin();
 				it != this->cmdList.end(); ++it)
 		{
 			(*it)->execute(this->clientList);
+			delete (*it);
 		}
+		this->cmdList.clear();
+
 		for(nfds_t i = 0; i < this->numSockets; ++i)
 		{
 			if (this->pfds[i].revents & POLLOUT)
@@ -124,11 +128,13 @@ void Server::newConnection()
 	socklen_t addrlen = sizeof(sockaddr);
 
 	fd = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
+	int flags = fcntl(fd, F_GETFL, 0);
+	fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 	std::string clientAddress(inet_ntoa(address.sin_addr));
 	Log::out("new connection with " + clientAddress + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
 	this->pfds[this->numSockets].fd = fd;
 	this->pfds[this->numSockets].events = POLLIN | POLLOUT;
-	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress, fd)));
+	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
 	this->clientList.find(fd)->second->addMsg("Welcome to IRC");
 	this->numSockets++;
 }

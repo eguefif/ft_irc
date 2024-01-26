@@ -7,5 +7,5 @@ CmdNick::CmdNick(const int &pFd,
 void CmdNick::execute(std::map<int, Client *> &clientList)
 {
 	(void) clientList;
-	std::cout << this->message << std::endl;
+	std::cout << this->message;
 }
