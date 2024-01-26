@@ -38,7 +38,7 @@ class Server
 		int serverSocket;
 		nfds_t numSockets;
 		struct sockaddr_in addressServer;
-		struct pollfd *pfds;
+		std::vector<pollfd> pfds;
 		std::vector<int> closedPfdsIndex;
 
 		Server(const Server &other);

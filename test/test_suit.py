@@ -50,7 +50,7 @@ async def test_multiple_connection():
     clean_log_file()
 
 @pytest.mark.asyncio
-async def client_welcome_msg():
+async def test_client_welcome_msg():
     error = 1
     clean_log_file()
     reader, writer = await asyncio.open_connection(HOST, PORT)
@@ -63,6 +63,7 @@ async def client_welcome_msg():
     else:
         data = data.decode()
         assert error
+        assert len(data) == len("Welcome to IRC\n")
         assert data == "Welcome to IRC\n"
     finally:
         writer.close()
@@ -83,4 +84,14 @@ async def test_commandes():
     if content:
         to_cmp = content[1].strip()
         to_cmp = to_cmp.split("] ")
-        assert to_cmp[1] == f"new user nickname test"
+        assert to_cmp[1] == f"New user nickname test"
+
+@pytest.mark.asyncio
+async def test_mass_connections_disconnections():
+    max_connection = 1000
+    for i in range(max_connection):
+        reader, writer = await asyncio.open_connection(HOST, PORT)
+        writer.close()
+        await writer.wait_closed()
+    assert i == max_connection - 1
+

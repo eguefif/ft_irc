@@ -22,7 +22,7 @@ Server::~Server()
 {
 	for (nfds_t i = 0; i < this->numSockets; ++i)
 		close(this->pfds[i].fd);
-	delete[] this->pfds;
+	//delete[] this->pfds;
 }
 
 int	Server::initConnection(struct sockaddr_in &address)
@@ -74,7 +74,7 @@ void Server::run()
 {
 	while (true)
 	{
-		if (poll(this->pfds, this->numSockets, -1) < 0)
+		if (poll(this->pfds.data(), this->numSockets, -1) < 0)
 		{
 			Log::err("poll failure", 0);
 			exit(1);
@@ -95,18 +95,29 @@ void Server::run()
 					cmdTmp = this->clientList.find(this->pfds[i].fd)->second->updateCmd(buffer);
 				if (retVal == 0)
 				{
-//					this->closedPfdsIndex.push_back(i);
+					this->closedPfdsIndex.push_back(this->pfds[i].fd);
 					this->removeClient(this->pfds[i].fd, i);
 				}
 				if (cmdTmp.length() != 0)
 					this->cmdList.push_back(cmdFactory(cmdTmp, this->pfds[i].fd));
 			}
 		}
-/*		for (int i = 0; i < (int)fdToRemove.size(); ++i)
+		for (int i = 0; i < (int)this->closedPfdsIndex.size(); ++i)
 		{
-			this->pfds  + fdToRemove.at(i));
+			int j = 0;
+			for (std::vector<pollfd>::iterator it = this->pfds.begin(); it != this->pfds.end(); ++it)
+			{
+				if ((*it).fd == this->closedPfdsIndex[i])
+					break;
+				j++;
+			}
+			if (static_cast<unsigned long>(j) == this->pfds.size())
+				continue;
+			close(this->pfds[j].fd);
+			this->pfds.erase(this->pfds.begin() + j);
+			this->numSockets--;
 		}
-		*/
+		this->closedPfdsIndex.clear();
 		for (std::vector<ACmd *>::iterator it = this->cmdList.begin();
 				it != this->cmdList.end(); ++it)
 		{
@@ -134,24 +145,36 @@ void Server::run()
 
 void Server::initPoll()
 {
-	this->pfds = new pollfd[SERV_MAX_CLIENTS];
-	this->pfds[0].fd = this->serverSocket;
-	this->pfds[0].events = POLLIN;
+	struct pollfd p;
+
+	p.fd = this->serverSocket;
+	p.events = POLLIN;
+	this->pfds.push_back(p);
+	//this->pfds = new pollfd[SERV_MAX_CLIENTS];
+	//this->pfds[0].fd = this->serverSocket;
+	//this->pfds[0].events = POLLIN;
 }
 
 void Server::newConnection()
 {
 	int	fd = 0;
+	struct pollfd p;
 	struct sockaddr_in address;
+	
 	socklen_t addrlen = sizeof(sockaddr);
 	fd = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
 	setNonBlockingSocket(fd);
 	std::string clientAddress(inet_ntoa(address.sin_addr));
 	//Log::out("new connection with " + clientAddress + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
-	this->pfds[this->numSockets].fd = fd;
-	this->pfds[this->numSockets].events = POLLIN | POLLOUT;
+	//this->pfds[this->numSockets].fd = fd;
+	//this->pfds[this->numSockets].events = POLLIN | POLLOUT;
+
+	p.fd = fd;
+	p.events = POLLIN | POLLOUT;
+	this->pfds.push_back(p);
+
 	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
-	//this->clientList.find(fd)->second->addMsg("Welcome to IRC");
+	this->clientList.find(fd)->second->addMsg("Welcome to IRC");
 	this->numSockets++;
 }
 
