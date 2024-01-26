@@ -2,19 +2,23 @@
 
 #include <sstream>
 #include "Client.hpp"
+#include "CmdNick.hpp"
 
 #define CMD_LIST_NUMBER 2
 
-public CommandGenerator
+class Client;
+class ACmd;
+
+class CommandGenerator
 {
 	public:
-		CommandGenerator(const int &pSenderFd, std::map<int, Client*> &pClientList);
-		virtual ~CommandGenerator();
+		CommandGenerator();
+		~CommandGenerator();
 
 		ACmd *update(const std::string &msg);
+		void setFd(const int &pFd);
 
 	private:
-		CommandGenerator() {};
 		CommandGenerator(const CommandGenerator &other);
 		CommandGenerator &operator=(const CommandGenerator &other);
 
@@ -23,7 +27,6 @@ public CommandGenerator
 
 		int senderFd;
 		std::string msg;
-		std::map<int, Client*> &clientList;
 
-		const static std::string commandList[] = {"NICK", "USER"};
+		std::string commandList[CMD_LIST_NUMBER];
 };

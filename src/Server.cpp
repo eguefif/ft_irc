@@ -80,8 +80,19 @@ void Server::run()
 		{
 			if (this->pfds[i].revents & POLLIN)
 			{
-				
+				ACmd *cmdTmp = 0;
+				char buffer[MAX_MSG_SIZE];
+
+				while (read(this->pfds[i].fd, buffer, MAX_MSG_SIZE))
+					cmdTmp = this->clientList.find(this->pfds[i].fd)->second->updateCmd(buffer);
+				if (cmdTmp)
+					this->cmdList.push_back(cmdTmp);
 			}
+		}
+		for (std::vector<ACmd *>::iterator it = this->cmdList.begin();
+				it != this->cmdList.end(); ++it)
+		{
+			(*it)->execute(this->clientList);
 		}
 		for(nfds_t i = 0; i < this->numSockets; ++i)
 		{
@@ -117,7 +128,7 @@ void Server::newConnection()
 	Log::out("new connection with " + clientAddress + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
 	this->pfds[this->numSockets].fd = fd;
 	this->pfds[this->numSockets].events = POLLIN | POLLOUT;
-	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
+	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress, fd)));
 	this->clientList.find(fd)->second->addMsg("Welcome to IRC");
 	this->numSockets++;
 }

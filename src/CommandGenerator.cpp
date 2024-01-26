@@ -1,11 +1,20 @@
 #include "CommandGenerator.hpp"
 
-CommandGenerator::CommandGenerator(const int &senderFd. std::map<int, Client*> &pClientList): senderFd(pSenderFd), clientList(pClientList){}
+CommandGenerator::CommandGenerator()
+{
+	this->commandList[0] = "NICK";
+	this->commandList[1] = "USER";
+}
 
-ACmd CommandGenerator::update(const std::string &pMsg)
+void CommandGenerator::setFd(const int &pFd)
+{
+	this->senderFd = pFd;
+}
+
+ACmd *CommandGenerator::update(const std::string &pMsg)
 {
 	this->msg += pMsg;
-	if (this->msg[this->msg.length()] == '\n')
+	if (this->msg[this->msg.length()] == '\n' || this->msg.length() >= 512)
 		return (this->generate());
 	return 0;
 }
@@ -19,9 +28,10 @@ ACmd *CommandGenerator::generate()
 	switch (this->getIndex(cmd))
 	{
 		case 0:
-			return new CmdNick(this->senderFd, this->clientList, ssMsg);
+			return new CmdNick(this->senderFd, this->msg);
 			break;
 	}
+	return 0;
 }
 
 int CommandGenerator::getIndex(const std::string &cmd)

@@ -8,11 +8,13 @@
 #include <unistd.h>
 #include <poll.h>
 #include <map>
+#include <vector>
 
-#include "../includes/Log.hpp"
-#include "../includes/Client.hpp"
+#include "Log.hpp"
+#include "Client.hpp"
 
 #define SERV_MAX_CLIENTS 100
+#define MAX_MSG_SIZE 512
 
 class Server
 {
@@ -26,6 +28,7 @@ class Server
 	
 	private:
 		std::map<int, Client*> clientList;
+		std::vector<ACmd *> cmdList;
 		int port;
 		std::string pass;
 		int serverSocket;
