@@ -1,7 +1,7 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 _INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp
 

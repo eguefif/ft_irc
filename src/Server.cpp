@@ -58,13 +58,20 @@ int	Server::initConnection(struct sockaddr_in &address)
 		Log::err("listen failed", 0);
 		exit(1);
 	}
+	setNonBlockingSocket(newSocket);
 	this->numSockets++;
 	return newSocket;
 }
 
+void setNonBlockingSocket(const int &fd)
+{
+	int flags = fcntl(fd, F_GETFL, 0);
+	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+		Log::err("fcntl error: " + std::to_string(errno), 0);
+}
+
 void Server::run()
 {
-
 	while (true)
 	{
 		if (poll(this->pfds, this->numSockets, -1) < 0)
@@ -82,27 +89,38 @@ void Server::run()
 			{
 				std::string cmdTmp = "";
 				char buffer[MAX_MSG_SIZE];
-
-				read(this->pfds[i].fd, buffer, MAX_MSG_SIZE);
-//				while (read(this->pfds[i].fd, buffer, MAX_MSG_SIZE))
+				bzero(buffer, MAX_MSG_SIZE);
+				int retVal;
+				while ((retVal = recv(this->pfds[i].fd, buffer, MAX_MSG_SIZE, 0)) > 0)
 					cmdTmp = this->clientList.find(this->pfds[i].fd)->second->updateCmd(buffer);
+				if (retVal == 0)
+				{
+//					this->closedPfdsIndex.push_back(i);
+					this->removeClient(this->pfds[i].fd, i);
+				}
 				if (cmdTmp.length() != 0)
 					this->cmdList.push_back(cmdFactory(cmdTmp, this->pfds[i].fd));
 			}
 		}
+/*		for (int i = 0; i < (int)fdToRemove.size(); ++i)
+		{
+			this->pfds  + fdToRemove.at(i));
+		}
+		*/
 		for (std::vector<ACmd *>::iterator it = this->cmdList.begin();
 				it != this->cmdList.end(); ++it)
 		{
-			(*it)->execute(this->clientList);
+			if (*it)
+				(*it)->execute(this->clientList);
 			delete (*it);
 		}
 		this->cmdList.clear();
-
 		for(nfds_t i = 0; i < this->numSockets; ++i)
 		{
 			if (this->pfds[i].revents & POLLOUT)
 			{
 				std::string message;
+				//if ()
 				while((message = this->clientList.find(pfds[i].fd)->second->getMsg()) != "")
 				{
 					write(pfds[i].fd, message.c_str(), message.length());
@@ -116,9 +134,9 @@ void Server::run()
 
 void Server::initPoll()
 {
-	this->pfds = new pollfd[SERV_MAX_CLIENTS]; 
-	pfds[0].fd = this->serverSocket;
-	pfds[0].events = POLLIN;
+	this->pfds = new pollfd[SERV_MAX_CLIENTS];
+	this->pfds[0].fd = this->serverSocket;
+	this->pfds[0].events = POLLIN;
 }
 
 void Server::newConnection()
@@ -126,15 +144,20 @@ void Server::newConnection()
 	int	fd = 0;
 	struct sockaddr_in address;
 	socklen_t addrlen = sizeof(sockaddr);
-
 	fd = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
-	int flags = fcntl(fd, F_GETFL, 0);
-	fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+	setNonBlockingSocket(fd);
 	std::string clientAddress(inet_ntoa(address.sin_addr));
-	Log::out("new connection with " + clientAddress + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
+	//Log::out("new connection with " + clientAddress + ":" + std::to_string(ntohs(this->addressServer.sin_port)));
 	this->pfds[this->numSockets].fd = fd;
 	this->pfds[this->numSockets].events = POLLIN | POLLOUT;
 	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
-	this->clientList.find(fd)->second->addMsg("Welcome to IRC");
+	//this->clientList.find(fd)->second->addMsg("Welcome to IRC");
 	this->numSockets++;
+}
+
+void Server::removeClient(const int &fd, int index)
+{
+	delete this->clientList.find(fd)->second;
+	this->clientList.erase(fd);
+	close(this->pfds[index].fd);
 }

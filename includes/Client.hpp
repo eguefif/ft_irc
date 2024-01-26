@@ -14,6 +14,7 @@ class Client
 		std::string getMsg();
 
 		std::string updateCmd(const std::string &message);
+		void setNickname(const std::string &nickname);
 
 	private:
 		Client();
@@ -21,6 +22,7 @@ class Client
 		Client(const Client &other);
 
 		std::string	currCmd;
+		std::string nickname;
 		const std::string address;
 		std::queue<std::string> outputQueue;
 };

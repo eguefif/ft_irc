@@ -39,6 +39,7 @@ class Server
 		nfds_t numSockets;
 		struct sockaddr_in addressServer;
 		struct pollfd *pfds;
+		std::vector<int> closedPfdsIndex;
 
 		Server(const Server &other);
 		Server &operator=(const Server &other);
@@ -46,4 +47,7 @@ class Server
 		int initConnection(struct sockaddr_in &address);
 		void newConnection();
 		void initPoll();
+		void removeClient(const int &fd, int index);
 };
+
+void setNonBlockingSocket(const int &fd);

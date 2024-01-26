@@ -6,6 +6,14 @@ CmdNick::CmdNick(const int &pFd,
 
 void CmdNick::execute(std::map<int, Client *> &clientList)
 {
-	(void) clientList;
-	std::cout << this->message;
+	clientList.find(this->fd)->second->setNickname(this->getNickname());
+}
+
+const std::string CmdNick::getNickname()
+{
+	std::stringstream ssMsg(this->message);
+	std::string str;
+	std::getline(ssMsg, str, ' ');
+	std::getline(ssMsg, str);
+	return str;
 }

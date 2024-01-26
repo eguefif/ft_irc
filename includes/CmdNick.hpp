@@ -18,4 +18,6 @@ class CmdNick : public ACmd
 			CmdNick();
 			CmdNick(const CmdNick &other);
 			CmdNick &operator=(const CmdNick &other);
+
+			const std::string getNickname();
 };
