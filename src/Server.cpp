@@ -14,7 +14,7 @@ Server::Server(const std::string &pPort, const std::string &pPass)
 	}
 	if (port < 0 || port > 49151)
 		Log::err("port is out of range [0;49151]", 0);
-	serverSocket = this->initConnection(this->addressServer);
+	this->initConnection(this->addressServer);
 	this->initPoll();
 }
 
@@ -22,20 +22,18 @@ Server::~Server()
 {
 	for (nfds_t i = 0; i < this->numSockets; ++i)
 		close(this->pfds[i].fd);
-	//delete[] this->pfds;
 }
 
-int	Server::initConnection(struct sockaddr_in &address)
+void Server::initConnection(struct sockaddr_in &address)
 {
-	int newSocket;
 	int opt = 1;
 
-	if ((newSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		Log::err("socket failed", 0);
 		exit(1);
 	}
-	if (setsockopt(newSocket, SOL_SOCKET,
+	if (setsockopt(serverSocket, SOL_SOCKET,
 				SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 	{
 		Log::err("setsockopt failed", 0);
@@ -48,19 +46,18 @@ int	Server::initConnection(struct sockaddr_in &address)
 		exit(1);
 	}
 	address.sin_port = htons(this->port);
-	if (bind(newSocket, (struct sockaddr *) &address, sizeof(address)) < 0)
+	if (bind(serverSocket, (struct sockaddr *) &address, sizeof(address)) < 0)
 	{
 		Log::err("bind failed", 0);
 		exit(1);
 	}
-	if (listen(newSocket, 10) < 0)
+	if (listen(serverSocket, 10) < 0)
 	{
 		Log::err("listen failed", 0);
 		exit(1);
 	}
-	setNonBlockingSocket(newSocket);
+	setNonBlockingSocket(serverSocket);
 	this->numSockets++;
-	return newSocket;
 }
 
 void setNonBlockingSocket(const int &fd)
@@ -74,73 +71,97 @@ void Server::run()
 {
 	while (true)
 	{
-		if (poll(this->pfds.data(), this->numSockets, -1) < 0)
+		runPoll();
+		handleNewconnection();
+		handlePauline();
+		runCommands();
+		handlePollout();
+	}
+	close(this->serverSocket);
+}
+
+void Server::runPoll()
+{
+	if (poll(this->pfds.data(), this->numSockets, -1) < 0)
+	{
+		Log::err("poll failure", 0);
+		exit(1);
+	}
+}
+
+void Server::handleNewconnection()
+{
+	if (this->pfds[0].revents & POLLIN)
+	{
+		this->newConnection();
+	}
+}
+
+void Server::handlePauline()
+{
+	for(nfds_t i = 1; i < this->numSockets; ++i)
+	{
+		if (this->pfds[i].revents & POLLIN)
 		{
-			Log::err("poll failure", 0);
-			exit(1);
-		}
-		if (this->pfds[0].revents & POLLIN)
-		{
-			this->newConnection();
-		}
-		for(nfds_t i = 1; i < this->numSockets; ++i)
-		{
-			if (this->pfds[i].revents & POLLIN)
+			std::string cmdTmp = "";
+			char buffer[MAX_MSG_SIZE];
+			bzero(buffer, MAX_MSG_SIZE);
+			int retVal;
+			while ((retVal = recv(this->pfds[i].fd, buffer, MAX_MSG_SIZE, 0)) > 0)
+				cmdTmp = this->clientList.find(this->pfds[i].fd)->second->updateCmd(buffer);
+			if (retVal == 0)
 			{
-				std::string cmdTmp = "";
-				char buffer[MAX_MSG_SIZE];
-				bzero(buffer, MAX_MSG_SIZE);
-				int retVal;
-				while ((retVal = recv(this->pfds[i].fd, buffer, MAX_MSG_SIZE, 0)) > 0)
-					cmdTmp = this->clientList.find(this->pfds[i].fd)->second->updateCmd(buffer);
-				if (retVal == 0)
-				{
-					this->closedPfdsIndex.push_back(this->pfds[i].fd);
-					this->removeClient(this->pfds[i].fd, i);
-				}
-				if (cmdTmp.length() != 0)
-					this->cmdList.push_back(cmdFactory(cmdTmp, this->pfds[i].fd));
+				this->closedPfdsIndex.push_back(this->pfds[i].fd);
+				this->removeClient(this->pfds[i].fd, i);
 			}
+			if (cmdTmp.length() != 0)
+				this->cmdList.push_back(cmdFactory(cmdTmp, this->pfds[i].fd));
 		}
-		for (int i = 0; i < (int)this->closedPfdsIndex.size(); ++i)
+	}
+	for (int i = 0; i < (int)this->closedPfdsIndex.size(); ++i)
+	{
+		int j = 0;
+		for (std::vector<pollfd>::iterator it = this->pfds.begin(); it != this->pfds.end(); ++it)
 		{
-			int j = 0;
-			for (std::vector<pollfd>::iterator it = this->pfds.begin(); it != this->pfds.end(); ++it)
+			if ((*it).fd == this->closedPfdsIndex[i])
+				break;
+			j++;
+		}
+		if (static_cast<unsigned long>(j) == this->pfds.size())
+			continue;
+		close(this->pfds[j].fd);
+		this->pfds.erase(this->pfds.begin() + j);
+		this->numSockets--;
+	}
+	this->closedPfdsIndex.clear();
+}
+
+void Server::runCommands()
+{
+	for (std::vector<ACmd *>::iterator it = this->cmdList.begin();
+			it != this->cmdList.end(); ++it)
+	{
+		if (*it)
+			(*it)->execute(this->clientList);
+		delete (*it);
+	}
+	this->cmdList.clear();
+}
+
+void Server::handlePollout()
+{
+	for(nfds_t i = 0; i < this->numSockets; ++i)
+	{
+		if (this->pfds[i].revents & POLLOUT)
+		{
+			std::string message;
+			while((message = this->clientList.find(pfds[i].fd)->second->getMsg()) != "")
 			{
-				if ((*it).fd == this->closedPfdsIndex[i])
-					break;
-				j++;
-			}
-			if (static_cast<unsigned long>(j) == this->pfds.size())
-				continue;
-			close(this->pfds[j].fd);
-			this->pfds.erase(this->pfds.begin() + j);
-			this->numSockets--;
-		}
-		this->closedPfdsIndex.clear();
-		for (std::vector<ACmd *>::iterator it = this->cmdList.begin();
-				it != this->cmdList.end(); ++it)
-		{
-			if (*it)
-				(*it)->execute(this->clientList);
-			delete (*it);
-		}
-		this->cmdList.clear();
-		for(nfds_t i = 0; i < this->numSockets; ++i)
-		{
-			if (this->pfds[i].revents & POLLOUT)
-			{
-				std::string message;
-				//if ()
-				while((message = this->clientList.find(pfds[i].fd)->second->getMsg()) != "")
-				{
-					write(pfds[i].fd, message.c_str(), message.length());
-					write(pfds[i].fd, "\n", 1);
-				}
+				write(pfds[i].fd, message.c_str(), message.length());
+				write(pfds[i].fd, "\n", 1);
 			}
 		}
 	}
-	close(this->serverSocket);
 }
 
 void Server::initPoll()
@@ -174,7 +195,7 @@ void Server::newConnection()
 	this->pfds.push_back(p);
 
 	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
-	this->clientList.find(fd)->second->addMsg("Welcome to IRC");
+	//this->clientList.find(fd)->second->addMsg("Welcome to IRC");
 	this->numSockets++;
 }
 

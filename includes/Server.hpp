@@ -44,9 +44,14 @@ class Server
 		Server(const Server &other);
 		Server &operator=(const Server &other);
 
-		int initConnection(struct sockaddr_in &address);
-		void newConnection();
+		void initConnection(struct sockaddr_in &address);
 		void initPoll();
+		void runPoll();
+		void handleNewconnection();
+		void newConnection();
+		void handlePauline();
+		void runCommands();
+		void handlePollout();
 		void removeClient(const int &fd, int index);
 };
 
