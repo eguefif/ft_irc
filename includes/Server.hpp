@@ -16,10 +16,12 @@
 #include "ACmd.hpp"
 #include "Log.hpp"
 
+#define HOST "0.0.0.0"
 #define SERV_MAX_CLIENTS 100
 #define MAX_MSG_SIZE 512
 
 ACmd *cmdFactory(std::string cmd, int senderFd);
+
 class Server
 {
 	public:
@@ -44,15 +46,25 @@ class Server
 		Server(const Server &other);
 		Server &operator=(const Server &other);
 
-		void initConnection(struct sockaddr_in &address);
+		void setPort(const std::string &pPort);
+		void initServerSocket();
+		void createServerSocket();
+		void runBind();
+		void runListen();
+		void setAddressServerStruct();
 		void initPoll();
 		void runPoll();
 		void handleNewconnection();
 		void newConnection();
 		void handlePauline();
+		std::string readUntilFlushSocket(const int &fd);
+		bool isReadError(const int &retVal) const;
+		void listenPauline();
+		void removeClosedConnections();
+		bool isConnectionClosed(const int &retVal) const;
 		void runCommands();
 		void handlePollout();
-		void removeClient(const int &fd, int index);
+		void removeClient(const int &fd);
 };
 
 void setNonBlockingSocket(const int &fd);
