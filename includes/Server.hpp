@@ -49,6 +49,9 @@ class Server
 		void setPort(const std::string &pPort);
 		void initServerSocket();
 		void createServerSocket();
+		void createSocket();
+		void setupSocket();
+		void setNonBlockingSocket(const int &fd);
 		void runBind();
 		void runListen();
 		void setAddressServerStruct();
@@ -66,5 +69,3 @@ class Server
 		void handlePollout();
 		void removeClient(const int &fd);
 };
-
-void setNonBlockingSocket(const int &fd);

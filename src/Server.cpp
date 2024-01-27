@@ -33,24 +33,34 @@ void Server::initServerSocket()
 
 void Server::createServerSocket()
 {
-	int opt = 1;
+	this->createSocket();
+	this->setupSocket();
+	this->setNonBlockingSocket(this->serverSocket);
+	this->numSockets++;
+}
 
+void Server::createSocket()
+{
 	if ((this->serverSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		Log::err("socket failed", 0);
 		exit(1);
 	}
+}
+
+void Server::setupSocket()
+{
+	int opt = 1;
+
 	if (setsockopt(this->serverSocket, SOL_SOCKET,
 				SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 	{
 		Log::err("setsockopt failed", 0);
 		exit(1);
 	}
-	setNonBlockingSocket(this->serverSocket);
-	this->numSockets++;
 }
 
-void setNonBlockingSocket(const int &fd)
+void Server::setNonBlockingSocket(const int &fd)
 {
 	int flags = fcntl(fd, F_GETFL, 0);
 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
@@ -142,7 +152,7 @@ void Server::newConnection()
 	
 	addrlen = sizeof(sockaddr);
 	fd = accept(this->serverSocket, (struct sockaddr *)&address, &addrlen);
-	setNonBlockingSocket(fd);
+	this->setNonBlockingSocket(fd);
 	clientAddress = inet_ntoa(address.sin_addr);
 	newPfds.fd = fd;
 	newPfds.events = POLLIN | POLLOUT;
