@@ -1,7 +1,7 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-std=c++98 -fsanitize=address
 
 _INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp
 
@@ -26,10 +26,6 @@ $(ODIR)%.o: $(SDIR)%.cpp
 .PHONY: fclean clean re all obj_dir
 
 test: all
-	#./ircserv 6667 test &> ft_irc.log &
-	#cd test
-	#pytest
-	#pgrep ircserv | xargs kill -9
 	./test/make_test.sh
 
 clean:
