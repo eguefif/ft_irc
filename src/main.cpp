@@ -1,11 +1,11 @@
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 
 void	app(std::string port, std::string pass);
 
 int main(int argc, char **argv)
 {
 	if (argc != 3)
-		std::cerr << "USAGE: ircserver PORT PASS" << std::endl;
+		std::cerr << "USAGE: ./ircserver PORT PASS" << std::endl;
 	else
 		app(argv[1], argv[2]);
 }
