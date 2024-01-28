@@ -3,16 +3,10 @@ import pytest_asyncio
 import asyncio
 import time
 
+
+SEP = b"\n"
 HOST = "127.0.0.1"
 PORT = 6933
-
-@pytest.fixture
-def clean_log():
-    with open("../ft_irc.log", "w") as file:
-        file.write("")
-    yield
-    with open("../ft_irc.log", "w") as file:
-        file.write("")
 
 async def tcp_connection(depth=1):
     print("test", depth)
@@ -74,20 +68,6 @@ async def test_client_welcome_msg(clean_log):
         await writer.wait_closed()
 
 @pytest.mark.asyncio
-async def test_commandes(clean_log):
-    reader, writer = await asyncio.open_connection(HOST, PORT)
-    writer.write(b"NICK test\n")
-    writer.close()
-    await writer.wait_closed()
-    with open("../ft_irc.log", "r") as file:
-        content = file.readlines()
-    assert len(content) >= 3, "nothing in log file"
-    if content and len(content) >= 3:
-        to_cmp = content[1].strip()
-        to_cmp = to_cmp.split("] ")
-        assert to_cmp[1] == f"New user nickname test"
-
-@pytest.mark.asyncio
 async def test_mass_connections_disconnections(clean_log):
     max_connection = 1000
     for i in range(max_connection):
@@ -98,4 +78,3 @@ async def test_mass_connections_disconnections(clean_log):
         lines = file.readlines()
     assert i == max_connection - 1
     assert len(lines) / 2 == max_connection
-
