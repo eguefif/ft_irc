@@ -133,8 +133,11 @@ void Server::runCommands()
 		while ((msg = it->second->getNextMessage()).length())
 		{
 			cmd = cmdFactory(msg, it->first);
-			cmd->execute(this->clientList);
-			delete cmd;
+			if (cmd)
+			{
+				cmd->execute(this->clientList);
+				delete cmd;
+			}
 		}
 	}
 }
@@ -148,8 +151,9 @@ void Server::handlePollout()
 			std::string message;
 			while((message = this->clientList.find(pfds[i].fd)->second->getMsg()) != "")
 			{
-				write(pfds[i].fd, message.c_str(), message.length());
-				write(pfds[i].fd, "\n", 1);
+				write(pfds[i].fd, message.c_str(),
+							message.length() > MAX_MSG_SIZE - 2 ? MAX_MSG_SIZE - 2 : message.length());
+				write(pfds[i].fd, EOM.c_str(), 1);
 			}
 		}
 	}
