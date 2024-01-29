@@ -11,6 +11,8 @@ ACmd *cmdFactory(std::string msg, int senderFd)
 	std::stringstream ssMsg(msg);
 	std::string cmd;
 
+	if (msg[0] == ':')
+		ssMsg >> cmd;
 	ssMsg >> cmd;
 	switch (getIndex(cmd))
 	{
@@ -31,4 +33,6 @@ int getIndex(const std::string &cmd)
 			return i;
 	return -1;
 }
+
+
 

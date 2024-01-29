@@ -11,9 +11,10 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 
 const std::string CmdNick::getNickname()
 {
-	std::stringstream ssMsg(this->message);
-	std::string str;
-	std::getline(ssMsg, str, ' ');
-	std::getline(ssMsg, str);
-	return str;
+	if (this->params.size())
+	{
+		return this->params[0];
+	}
+	else
+		return std::string();
 }

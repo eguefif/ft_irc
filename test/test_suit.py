@@ -75,3 +75,22 @@ async def test_mass_connections_disconnections(clean_log):
         lines = file.readlines()
     assert i == max_connection - 1
     assert len(lines) / 2 == max_connection
+
+message_split= [
+        (b"USER test * 0: Emmanuel Guefif" + SEP, "USER test * 0 Emmanuel Guefif"),
+        (b"USER   test   * 0:        Emmanuel Guefif" + SEP, "USER test * 0 Emmanuel Guefif"),
+        (b"USER test * 0:Emmanuel Guefif                  " + SEP, "USER test * 0 Emmanuel Guefif"),
+        ]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("command,log", message_split)
+async def test_message_split(message, command, log):
+        reader, writer = await asyncio.open_connection(HOST, PORT)
+        writer.write(command)
+        data = await reader.readline()
+        data2 = await reader.readline()
+        writer.close()
+        await writer.wait_closed()
+
+        assert data.strip() == log
+        assert len(data2) == 0
