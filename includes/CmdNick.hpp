@@ -20,6 +20,7 @@ class CmdNick : public ACmd
 			CmdNick();
 			CmdNick(const CmdNick &other);
 			CmdNick &operator=(const CmdNick &other);
+			bool checkNickUnicity(std::map<int, Client *> &clientList);
 
 			const std::string getNewNickname();
 };

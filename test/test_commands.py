@@ -6,13 +6,14 @@ from settings import *
 test_command = [
         (b"NICK Emmanuel" + SEP, "", "New user nickname Emmanuel"),
         (b":allo NICK Emmanuel" + SEP, "", "New user nickname Emmanuel"),
-        (b"NICK Emmanuel on fait quoi?" + SEP, "", "New user nickname Emmanuel"),
-        (b"NICK Emmanuel Pauline" + SEP, "", "New user nickname Emmanuel"),
+        (b":allo NICK Emmanuel " + SEP, "", "New user nickname Emmanuel"),
+        (b":allo  NICK  Emmanuel" + SEP, "", "New user nickname Emmanuel"),
+        (b":allo NICK  Emmanuel" + SEP, "", "New user nickname Emmanuel"),
         ]
 
 async def get_read_content(reader):
     try:
-        async with asyncio.timeout(1):
+        async with asyncio.timeout(0.1):
             _ = await reader.readline()
             retval = await reader.readline()
             retval2 = await reader.readline()

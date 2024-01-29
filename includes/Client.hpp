@@ -19,6 +19,7 @@ class Client
 		std::string getNickname();
 		void setNickname(const std::string &nickname);
 		std::string getNextMessage();
+		const std::string &getAddress() const;
 
 	private:
 		Client();

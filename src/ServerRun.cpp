@@ -133,8 +133,11 @@ void Server::runCommands()
 		while ((msg = it->second->getNextMessage()).length())
 		{
 			cmd = cmdFactory(msg, it->first);
-			cmd->execute(this->clientList);
-			delete cmd;
+			if (cmd)
+			{
+				cmd->execute(this->clientList);
+				delete cmd;
+			}
 		}
 	}
 }

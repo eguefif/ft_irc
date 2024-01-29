@@ -16,7 +16,7 @@ async def tcp_connection(depth=1):
 @pytest.mark.asyncio
 async def test_connection(clean_log):
     await tcp_connection()
-    time.sleep(1)
+    time.sleep(0.1)
     with open("../ft_irc.log", "r") as file:
         content = file.readlines()
     assert content, "nothing in log file"
@@ -29,7 +29,7 @@ async def test_connection(clean_log):
 async def test_multiple_connection(clean_log):
     max_depth = 5
     await tcp_connection(depth=max_depth)
-    time.sleep(1)
+    time.sleep(0.1)
     with open("../ft_irc.log", "r") as file:
         content = file.readlines()
     assert content, "nothing in log file"
@@ -49,7 +49,7 @@ async def test_client_welcome_msg(clean_log):
     reader, writer = await asyncio.open_connection(HOST, PORT)
     data = ""
     try:
-        async with asyncio.timeout(1):
+        async with asyncio.timeout(0.1):
             data = await reader.readline()
             data2 = await reader.readline()
     except TimeoutError:

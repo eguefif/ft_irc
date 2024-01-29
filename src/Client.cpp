@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maxpelle <maxpelle@student.42quebec.com>   +#+  +:+       +#+        */
+/*   By: jrossign <jrossign@student.42quebec.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:35:42 by maxpelle          #+#    #+#             */
-/*   Updated: 2024/01/29 14:39:51 by maxpelle         ###   ########.fr       */
+/*   Updated: 2024/01/29 15:47:14 by jrossign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@ Client::Client(const std::string &pAddress): nickname("*"), address(pAddress)
 Client::~Client()
 {
 	Log::out(this->address + " disconnected");
+}
+
+const std::string &Client::getAddress() const
+{
+	return this->address;
 }
 
 void Client::addMsg(const std::string &msg)

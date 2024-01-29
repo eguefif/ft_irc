@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ACmd.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: maxpelle <maxpelle@student.42quebec.com>   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/29 13:57:57 by maxpelle          #+#    #+#             */
-/*   Updated: 2024/01/29 14:48:35 by maxpelle         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ACmd.hpp"
 
 ACmd::ACmd(const int &pFd, const std::string &pMessage): fd(pFd)
@@ -20,10 +8,12 @@ ACmd::ACmd(const int &pFd, const std::string &pMessage): fd(pFd)
 	if (pMessage.length() <= 0 || pMessage.length() > 512)
 		return;
 	if (pMessage[0] == ':')
-		std::getline(streamMsg, this->prefix, ' ');
-	std::getline(streamMsg, this->command, ' ');
+		streamMsg >> this->prefix;
+	streamMsg >> this->command;
 	while (std::getline(streamMsg, tmp, ' '))
 	{
+		if (!tmp.length())
+			continue;
 		if (tmp[0] == ':')
 		{
 			this->params.push_back(this->getTrailingParam(streamMsg.tellg(), pMessage));
