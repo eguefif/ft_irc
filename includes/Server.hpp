@@ -35,7 +35,6 @@ class Server
 	
 	private:
 		std::map<int, Client*> clientList;
-		std::vector<ACmd *> cmdList;
 		int port;
 		std::string pass;
 		int serverSocket;
@@ -61,7 +60,7 @@ class Server
 		void handleNewconnection();
 		void newConnection();
 		void handlePauline();
-		std::string readUntilFlushSocket(const int &fd);
+		std::string readSocket(const int &fd);
 		bool isReadError(const int &retVal) const;
 		void listenPauline();
 		void removeClosedConnections();

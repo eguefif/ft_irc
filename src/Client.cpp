@@ -26,20 +26,36 @@ std::string Client::getMsg()
 	return retval;
 }
 
-std::string Client::updateCmd(const std::string &message)
+void Client::updateMsg(const std::string &message)
 {
-	this->currCmd += message;
-	if (this->currCmd[this->currCmd.length() - 1] == '\n' || this->currCmd.length() >= 512)
-	{
-		std::string retVal = this->currCmd;
-		this->currCmd = "";
-		return (retVal);
-	}
-	return "";
+	this->inputMsg += message;
 }
 
 void Client::setNickname(const std::string &pNickname)
 {
 	nickname = pNickname;
 	Log::out("New user nickname " + pNickname);
+}
+
+std::string Client::getNextMessage()
+{
+	int pos;
+	std::string msg;
+	std::string sep(SEP);
+
+	if ((pos = this->inputMsg.find_first_of(sep), 0) == std::string::npos)
+	{
+		if (this->inputMsg.length() >= 10 * MAX_MSG_SIZE)
+		{
+			this->inputMsg = std::string();
+			Log::err("Message exceeded maximum allowed size client " + this->address , 0);
+		}
+
+		return std::string();
+	}
+	msg = this->inputMsg.substr(0, pos);
+	this->inputMsg.erase(0, pos + sep.length());
+	if (msg.length() >= 512)
+		return msg.substr(0, 512);
+	return msg;
 }
