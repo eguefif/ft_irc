@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: maxpelle <maxpelle@student.42quebec.com>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/29 14:35:42 by maxpelle          #+#    #+#             */
+/*   Updated: 2024/01/29 14:39:51 by maxpelle         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress): address(pAddress) 
+Client::Client(const std::string &pAddress): nickname("*"), address(pAddress)
 {
 	Log::out("new connection with " + this->address);
 	this->addMsg("Welcome to IRC");
@@ -31,6 +43,11 @@ void Client::updateMsg(const std::string &message)
 	this->inputMsg += message;
 }
 
+std::string Client::getNickname()
+{
+	return this->nickname;
+}
+
 void Client::setNickname(const std::string &pNickname)
 {
 	nickname = pNickname;
@@ -41,7 +58,7 @@ std::string Client::getNextMessage()
 {
 	int pos;
 	std::string msg;
-	std::string sep(SEP);
+	std::string sep(EOM);
 
 	if ((pos = this->inputMsg.find_first_of(sep), 0) == std::string::npos)
 	{

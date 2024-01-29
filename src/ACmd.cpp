@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ACmd.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: maxpelle <maxpelle@student.42quebec.com>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/29 13:57:57 by maxpelle          #+#    #+#             */
+/*   Updated: 2024/01/29 14:48:35 by maxpelle         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ACmd.hpp"
 
-ACmd::ACmd(const int &pFd, const std::string &pMessage) :
-	fd(pFd)
+ACmd::ACmd(const int &pFd, const std::string &pMessage): fd(pFd)
 {
 	std::stringstream streamMsg(pMessage);
 	std::string tmp;
@@ -54,6 +65,20 @@ void ACmd::logNewMessage()
 		Log::out("New message: " + msg); 
 	else
 		Log::out("New message: empty"); 
+}
+
+std::string ACmd::createErrorMsg(int num, std::string nickname, std::string error)
+{
+	std::string retval;
+
+	retval += SERVER_PREFIX + " " + std::to_string(num);
+	if (nickname.length())
+		retval += " " + nickname;
+	for (std::vector<std::string>::iterator it = this->params.begin();
+			it != this->params.end(); ++it)
+		retval += " " + *it;
+	retval += " :" + error;
+	return retval;
 }
 
 ACmd::ACmd(const ACmd &other) : fd(other.fd)

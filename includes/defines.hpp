@@ -1,5 +1,11 @@
 #pragma once
 
+#define SERVER_PREFIX std::string(":ft_irc")
+#define EOM std::string("\n")
+#define MAX_MSG_SIZE 512
+#define HOST "0.0.0.0"
+#define SERV_MAX_CLIENTS 100
+
 #define RPL_WELCOME 001
 #define RPL_YOURHOST 002
 #define RPL_CREATED 003
@@ -65,7 +71,9 @@
 #define ERR_FILEERROR 424
 
 #define ERR_NONICKNAMEGIVEN 431
+#define ERR_NONICKNAMEGIVEN_STR std::string("No nickname given")
 #define ERR_ERRONEUSNICKNAME 432
+#define ERR_ERRONEUSNICKNAME_STR std::string("Erroneus nickname")
 #define ERR_NICKNAMEINUSE 433
 #define ERR_NICKCOLLISION 436
 

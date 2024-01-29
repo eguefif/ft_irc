@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include "defines.hpp"
+
 class Log
 {
 	public:

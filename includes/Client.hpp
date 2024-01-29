@@ -3,10 +3,9 @@
 #include <queue>
 #include <string>
 
+#include "defines.hpp"
 #include "Log.hpp"
 
-#define SEP "\n"
-#define MAX_MSG_SIZE 512
 
 class Client
 {
@@ -17,6 +16,7 @@ class Client
 		std::string getMsg();
 
 		void updateMsg(const std::string &message);
+		std::string getNickname();
 		void setNickname(const std::string &nickname);
 		std::string getNextMessage();
 

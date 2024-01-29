@@ -5,7 +5,9 @@ from settings import *
 
 
 test_command = [
-        (b"NICK Emmanuel" + SEP, "", "New user nickname Emmanuel")
+        (b"NICK " + SEP, "431 :No nickname given", "Invalid NICK command: 127.0.0.1"),
+        (b"NICK 1234567890" + SEP, "432 * 1234567890 :Erroneous Nickname", "Invalid NICK command: 127.0.0.1"),
+        (b"NICK 123456789 0123" + SEP, "432 * 1234567890 0123 :Erroneous Nickname", "Invalid NICK command: 127.0.0.1"),
         ]
 
 async def get_read_content(reader):

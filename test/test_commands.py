@@ -4,7 +4,10 @@ import asyncio
 from settings import *
 
 test_command = [
-        (b"NICK Emmanuel" + SEP, "", "New user nickname Emmanuel")
+        (b"NICK Emmanuel" + SEP, "", "New user nickname Emmanuel"),
+        (b":allo NICK Emmanuel" + SEP, "", "New user nickname Emmanuel"),
+        (b"NICK Emmanuel on fait quoi?" + SEP, "", "New user nickname Emmanuel"),
+        (b"NICK Emmanuel Pauline" + SEP, "", "New user nickname Emmanuel"),
         ]
 
 async def get_read_content(reader):
