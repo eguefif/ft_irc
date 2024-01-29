@@ -1,10 +1,7 @@
 import pytest
 import pytest_asyncio
 import asyncio
-
-SEP = b"\n"
-HOST = "127.0.0.1"
-PORT = 6933
+from settings import *
 
 test_command = [
         (b"NICK Emmanuel" + SEP, "", "New user nickname Emmanuel")
