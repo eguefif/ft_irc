@@ -20,6 +20,7 @@ class Client
 		void setNickname(const std::string &nickname);
 		std::string getNextMessage();
 		const std::string &getAddress() const;
+		void setRegistered();
 
 	private:
 		Client();
@@ -29,5 +30,6 @@ class Client
 		std::string	inputMsg;
 		std::string nickname;
 		const std::string address;
+		bool registered;
 		std::queue<std::string> outputQueue;
 };

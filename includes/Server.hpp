@@ -21,7 +21,7 @@
 #define SERV_MAX_CLIENTS 100
 #define MAX_MSG_SIZE 512
 
-ACmd *cmdFactory(std::string cmd, int senderFd);
+ACmd *cmdFactory(std::string cmd, int senderFd, std::string password);
 
 class Server
 {

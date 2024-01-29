@@ -132,7 +132,7 @@ void Server::runCommands()
 	{
 		while ((msg = it->second->getNextMessage()).length())
 		{
-			cmd = cmdFactory(msg, it->first);
+			cmd = cmdFactory(msg, it->first, this->pass);
 			if (cmd)
 			{
 				cmd->execute(this->clientList);

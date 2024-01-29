@@ -9,6 +9,7 @@ test_command = [
         (b":allo NICK Emmanuel " + SEP, "", "New user nickname Emmanuel"),
         (b":allo  NICK  Emmanuel" + SEP, "", "New user nickname Emmanuel"),
         (b":allo NICK  Emmanuel" + SEP, "", "New user nickname Emmanuel"),
+        (b"PASS test" + SEP, "", f"User registered {HOST}"),
         ]
 
 async def get_read_content(reader):

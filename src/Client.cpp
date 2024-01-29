@@ -6,13 +6,13 @@
 /*   By: jrossign <jrossign@student.42quebec.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 14:35:42 by maxpelle          #+#    #+#             */
-/*   Updated: 2024/01/29 15:47:14 by jrossign         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:58:45 by jrossign         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress): nickname("*"), address(pAddress)
+Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), registered(false)
 {
 	Log::out("new connection with " + this->address);
 	this->addMsg("Welcome to IRC");
@@ -80,4 +80,9 @@ std::string Client::getNextMessage()
 	if (msg.length() >= 512)
 		return msg.substr(0, 512);
 	return msg;
+}
+
+void Client::setRegistered()
+{
+	this->registered = true;
 }
