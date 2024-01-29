@@ -21,7 +21,6 @@ ACmd::ACmd(const int &pFd, const std::string &pMessage) :
 		else
 			this->params.push_back(trimString(tmp));
 	}
-	this->logNewMessage();
 }
 
 std::string ACmd::getTrailingParam(int pos, const std::string &msg)
