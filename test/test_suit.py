@@ -2,11 +2,8 @@ import pytest
 import pytest_asyncio
 import asyncio
 import time
+from settings import *
 
-
-SEP = b"\n"
-HOST = "127.0.0.1"
-PORT = 6933
 
 async def tcp_connection(depth=1):
     print("test", depth)
