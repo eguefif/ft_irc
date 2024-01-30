@@ -73,7 +73,7 @@
 #define ERR_NONICKNAMEGIVEN 431
 #define ERR_NONICKNAMEGIVEN_STR std::string("No nickname given")
 #define ERR_ERRONEUSNICKNAME 432
-#define ERR_ERRONEUSNICKNAME_STR std::string("Erroneus nickname")
+#define ERR_ERRONEUSNICKNAME_STR std::string("Erroneous nickname")
 #define ERR_NICKNAMEINUSE 433
 #define ERR_NICKNAMEINUSE_STR std::string("Nickname is already in use") 
 #define ERR_NICKCOLLISION 436
