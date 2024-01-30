@@ -17,3 +17,27 @@ std::string trimString(std::string str)
 	}
 	return str;
 }
+
+bool isPrint(std::string &str)
+{
+	for(std::string::iterator it = str.begin();
+			it != str.end();
+			++it)
+	{
+		 if (!std::isprint(*it) || *it == ',')
+			 return false;
+	}
+	return true;
+}
+
+bool isWord(std::string str)
+{
+	for(std::string::iterator it = str.begin();
+			it != str.end();
+			++it)
+	{
+		 if (!std::isprint(*it) || *it == ' ')
+			 return false;
+	}
+	return true;
+}

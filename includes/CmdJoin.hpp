@@ -17,10 +17,10 @@ class CmdNick : public ACmd
 		std::string checkError(std::map<int, Client *> &clientList);
 	
 	private:
-		CmdNick();
-		CmdNick(const CmdNick &other);
-		CmdNick &operator=(const CmdNick &other);
-		bool checkNickUnicity(std::map<int, Client *> &clientList);
+			CmdNick();
+			CmdNick(const CmdNick &other);
+			CmdNick &operator=(const CmdNick &other);
+			bool checkNickUnicity(std::map<int, Client *> &clientList);
 
-		const std::string getNewNickname();
+			const std::string getNewNickname();
 };

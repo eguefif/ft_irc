@@ -3,10 +3,10 @@
 #include <sstream>
 #include <map>
 #include <vector>
-#include "stringUtils.hpp"
 #include <exception>
 
 #include "defines.hpp"
+#include "stringUtils.hpp"
 #include "Client.hpp"
 
 class Client;
@@ -27,6 +27,11 @@ class ACmd
 		std::string prefix;
 		std::string command;
 		std::vector<std::string> params;
+
+		const std::string &getClientNick(std::map<int, Client *> &clientList) const;
+		const std::string &getClientAddr(std::map<int, Client *> &clientList) const;
+		bool isClientAuthenticated(std::map<int, Client *> &clientList) const;
+		bool isClientRegistered(std::map<int, Client *> &clientList) const;
 		std::string createErrorMsg(int num, std::string nickname, std::string error);
 
 	private:

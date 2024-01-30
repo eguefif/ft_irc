@@ -16,7 +16,9 @@ ACmd::ACmd(const int &pFd, const std::string &pMessage): fd(pFd)
 			continue;
 		if (tmp[0] == ':')
 		{
-			this->params.push_back(this->getTrailingParam(streamMsg.tellg(), pMessage));
+			this->params.push_back(this->getTrailingParam(
+						(int)streamMsg.tellg() - (int)tmp.length(),
+						pMessage));
 			break;
 		}
 		else
@@ -30,13 +32,13 @@ std::string ACmd::getTrailingParam(int pos, const std::string &msg)
 
 	try
 	{
-		retval = msg.substr(pos + 1, msg.length());
+		retval = msg.substr(pos, msg.length() - pos);
 	}
 	catch(std::exception e)
 	{
 		return std::string();
 	}
-	return trimString(retval);
+	return retval;
 }
 
 void ACmd::logNewMessage()
@@ -69,6 +71,26 @@ std::string ACmd::createErrorMsg(int num, std::string nickname, std::string erro
 		retval += " " + *it;
 	retval += " :" + error;
 	return retval;
+}
+
+const std::string &ACmd::getClientNick(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->getNickname();
+}
+
+const std::string &ACmd::getClientAddr(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->getAddress();
+}
+
+bool ACmd::isClientAuthenticated(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->isAuthenticated();
+}
+
+bool ACmd::isClientRegistered(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->isRegistered();
 }
 
 ACmd::ACmd(const ACmd &other) : fd(other.fd)

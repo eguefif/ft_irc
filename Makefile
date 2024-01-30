@@ -3,9 +3,9 @@ NAME=ircserv
 CC=c++
 CFLAGS = -Wall -Wextra -Werror #-std=c++98 -fsanitize=address
 
-_INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp stringUtils.hpp
+_INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp CmdUser.hpp CmdPass.hpp stringUtils.hpp
 
-_SRC = main.cpp Server.cpp ServerRun.cpp Client.cpp Log.cpp ACmd.cpp CmdNick.cpp cmdFactory.cpp stringUtils.cpp
+_SRC = main.cpp Server.cpp ServerRun.cpp Client.cpp Log.cpp ACmd.cpp CmdNick.cpp CmdUser.cpp CmdPass.cpp cmdFactory.cpp stringUtils.cpp
 
 _OBJ = $(_SRC:.cpp=.o)
 SDIR = ./src/
@@ -25,7 +25,7 @@ $(ODIR)%.o: $(SDIR)%.cpp
 
 .PHONY: fclean clean re all obj_dir
 
-test: all
+test: re
 	./test/make_test.sh
 
 clean:

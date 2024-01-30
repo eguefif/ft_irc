@@ -1,21 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jrossign <jrossign@student.42quebec.com>   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/29 14:35:42 by maxpelle          #+#    #+#             */
-/*   Updated: 2024/01/29 15:47:14 by jrossign         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress): nickname("*"), address(pAddress)
+Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), authenticated(false), nickRegistered(false), userRegistered(false)
 {
 	Log::out("new connection with " + this->address);
-	this->addMsg("Welcome to IRC");
 }
 
 Client::~Client()
@@ -48,17 +35,6 @@ void Client::updateMsg(const std::string &message)
 	this->inputMsg += message;
 }
 
-std::string Client::getNickname()
-{
-	return this->nickname;
-}
-
-void Client::setNickname(const std::string &pNickname)
-{
-	nickname = pNickname;
-	Log::out("New user nickname " + pNickname);
-}
-
 std::string Client::getNextMessage()
 {
 	int pos;
@@ -80,4 +56,40 @@ std::string Client::getNextMessage()
 	if (msg.length() >= 512)
 		return msg.substr(0, 512);
 	return msg;
+}
+
+void Client::authenticate()
+{
+	this->authenticated = true;
+}
+
+bool Client::isAuthenticated() const
+{
+	return this->authenticated;
+}
+
+void Client::setUser(const std::string &pUser, const std::string &pRealname)
+{
+	this->user = pUser;
+	this->realName = pRealname;
+	this->userRegistered = true;
+	Log::out("user set to " + pUser + " (" + pRealname + ")" + " " + this->address);
+}
+void Client::setNickname(const std::string &pNickname)
+{
+	nickname = pNickname;
+	this->nickRegistered = true;
+	Log::out("user nickname set to " + pNickname
+			+ " " + this->address);
+}
+
+const std::string &Client::getNickname() const
+{
+	return this->nickname;
+}
+
+
+bool Client::isRegistered() const
+{
+	return this->authenticated && this->nickRegistered && this->userRegistered;
 }

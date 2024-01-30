@@ -69,6 +69,8 @@
 #define ERR_NOMOTD 422
 #define ERR_NOADMININFO 423
 #define ERR_FILEERROR 424
+#define ERR_INVALIDCHAR 425 //we made that up
+#define ERR_INVALIDCHAR_STR std::string("Invalid char detected")
 
 #define ERR_NONICKNAMEGIVEN 431
 #define ERR_NONICKNAMEGIVEN_STR std::string("No nickname given")
@@ -86,10 +88,14 @@
 #define ERR_USERSDISABLED 446
 
 #define ERR_NOTREGISTERED 451
+#define ERR_NOTREGISTERED_STR std::string("You have not registered") 
 #define ERR_NEEDMOREPARAMS 461
-#define ERR_ALREADYREGISTERED 462
+#define ERR_NEEDMOREPARAMS_STR std::string("Not enough parameters")
+#define ERR_ALREADYREGISTRED 462
+#define ERR_ALREADYREGISTRED_STR std::string("You may not reregister")
 #define ERR_NOPERMFORHOST 463
 #define ERR_PASSWDMISMATCH 464
+#define ERR_PASSWDMISMATCH_STR std::string("Password incorrect")
 #define ERR_YOUREBANNEDCREEP 465
 #define ERR_YOUWILLBEBANNED 466
 #define ERR_KEYSET 467
