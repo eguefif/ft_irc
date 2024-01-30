@@ -26,12 +26,12 @@ std::string CmdNick::checkError(std::map<int, Client *> &clientList)
 	if (this->params.size() > 1 || this->params[0].length() > 9)
 		return (this->createErrorMsg(
 				ERR_ERRONEUSNICKNAME,
-				clientList.find(this->fd)->second->getNickname(),
+				this->getClientNick(clientList),
 				ERR_ERRONEUSNICKNAME_STR));
 	if (!checkNickUnicity(clientList))
 		return (this->createErrorMsg(
 				ERR_NICKNAMEINUSE,
-				clientList.find(this->fd)->second->getNickname(),
+				this->getClientNick(clientList),
 				ERR_NICKNAMEINUSE_STR));
 	return std::string();
 }

@@ -1,18 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jrossign <jrossign@student.42quebec.com>   +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/29 14:35:42 by maxpelle          #+#    #+#             */
-/*   Updated: 2024/01/29 16:58:45 by jrossign         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), registered(false)
+Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), authenticated(false)
 {
 	Log::out("new connection with " + this->address);
 	this->addMsg("Welcome to IRC");
@@ -48,17 +36,6 @@ void Client::updateMsg(const std::string &message)
 	this->inputMsg += message;
 }
 
-std::string Client::getNickname()
-{
-	return this->nickname;
-}
-
-void Client::setNickname(const std::string &pNickname)
-{
-	nickname = pNickname;
-	Log::out("New user nickname " + pNickname);
-}
-
 std::string Client::getNextMessage()
 {
 	int pos;
@@ -82,7 +59,34 @@ std::string Client::getNextMessage()
 	return msg;
 }
 
-void Client::setRegistered()
+void Client::authenticate()
 {
-	this->registered = true;
+	this->authenticated = true;
+}
+
+bool Client::isAuthenticated() const
+{
+	return this->authenticated;
+}
+
+void Client::setUser(const std::string &pUser, const std::string &pRealname)
+{
+	this->user = pUser;
+	this->realName = pRealname;
+}
+void Client::setNickname(const std::string &pNickname)
+{
+	nickname = pNickname;
+	Log::out("New user nickname " + pNickname);
+}
+
+const std::string &Client::getNickname() const
+{
+	return this->nickname;
+}
+
+
+bool Client::isRegistered() const
+{
+	return this->authenticated && this->nickRegistered && this->userRegistered;
 }

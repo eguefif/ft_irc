@@ -15,21 +15,29 @@ class Client
 		void addMsg(const std::string &msg);
 		std::string getMsg();
 
-		void updateMsg(const std::string &message);
-		std::string getNickname();
-		void setNickname(const std::string &nickname);
-		std::string getNextMessage();
 		const std::string &getAddress() const;
-		void setRegistered();
+		void authenticate();
+		bool isRegistered() const;
+		bool isAuthenticated() const;
+		const std::string &getNickname() const;
+		void setNickname(const std::string &nickname);
+		void setUser(const std::string &pUser, const std::string &pRealname);
+
+		void updateMsg(const std::string &message);
+		std::string getNextMessage();
 
 	private:
 		Client();
 		Client	&operator=(const Client &other);
 		Client(const Client &other);
 
-		std::string	inputMsg;
+		std::string inputMsg;
 		std::string nickname;
+		std::string user;
+		std::string realName;
 		const std::string address;
-		bool registered;
+		bool authenticated;
+		bool nickRegistered;
+		bool userRegistered;
 		std::queue<std::string> outputQueue;
 };

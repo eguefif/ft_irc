@@ -27,6 +27,8 @@ class ACmd
 		std::string prefix;
 		std::string command;
 		std::vector<std::string> params;
+
+		const std::string &getClientNick(std::map<int, Client *> &clientList) const;
 		std::string createErrorMsg(int num, std::string nickname, std::string error);
 
 	private:
