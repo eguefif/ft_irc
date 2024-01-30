@@ -29,6 +29,7 @@ class ACmd
 		std::vector<std::string> params;
 
 		const std::string &getClientNick(std::map<int, Client *> &clientList) const;
+		const std::string &getClientAddr(std::map<int, Client *> &clientList) const;
 		bool isClientAuthenticated(std::map<int, Client *> &clientList) const;
 		bool isClientRegistered(std::map<int, Client *> &clientList) const;
 		std::string createErrorMsg(int num, std::string nickname, std::string error);

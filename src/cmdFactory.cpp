@@ -1,7 +1,8 @@
 #include <string>
 
-#include "CmdNick.hpp"
 #include "CmdPass.hpp"
+#include "CmdNick.hpp"
+#include "CmdUser.hpp"
 
 # define CMD_LIST_NUMBER 3
 
@@ -19,6 +20,9 @@ ACmd *cmdFactory(std::string msg, int senderFd, std::string password)
 	{
 		case 0:
 			return new CmdNick(senderFd, msg);
+			break;
+		case 1:
+			return new CmdUser(senderFd, msg);
 			break;
 		case 2:
 			return new CmdPass(senderFd, msg, password);

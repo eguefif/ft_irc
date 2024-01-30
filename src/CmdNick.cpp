@@ -8,12 +8,24 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 {
 	std::string errorMsg = this->checkError(clientList);
 	if (errorMsg.length())	
-	{
 		clientList.find(this->fd)->second->addMsg(errorMsg);
-		Log::out("Invalid NICK command: " + clientList.find(this->fd)->second->getAddress());
-	}
 	else
-		clientList.find(this->fd)->second->setNickname(this->getNewNickname());
+	{
+		if (!clientList.find(this->fd)->second->isRegistered())
+		{
+				clientList.find(this->fd)->second->setNickname(this->getNewNickname());
+				if (clientList.find(this->fd)->second->isRegistered())
+				{
+					clientList.find(this->fd)->second->addMsg("Welcome to IRC!");
+					Log::out("client registered: "
+							+ this->getClientNick(clientList)
+							+ " "
+							+ this->getClientAddr(clientList));
+				}
+		}
+		else
+				clientList.find(this->fd)->second->setNickname(this->getNewNickname());
+	}
 }
 
 std::string CmdNick::checkError(std::map<int, Client *> &clientList)
@@ -38,6 +50,12 @@ std::string CmdNick::checkError(std::map<int, Client *> &clientList)
 				ERR_NICKNAMEINUSE,
 				this->getClientNick(clientList),
 				ERR_NICKNAMEINUSE_STR));
+	if (!isWord(this->getNewNickname()))
+		return this->createErrorMsg(
+				ERR_INVALIDCHAR,
+				this->getClientNick(clientList),
+				ERR_INVALIDCHAR_STR);
+
 	return std::string();
 }
 

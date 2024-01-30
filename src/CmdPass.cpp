@@ -10,7 +10,7 @@ void CmdPass::execute(std::map<int, Client *> &clientList)
 		clientList.find(this->fd)->second->addMsg(errorMsg);
 	else if (this->params[0] == this->password)
 	{
-		Log::out("User registered " + clientList.find(this->fd)->second->getAddress());
+		Log::out("user authenticated " + this->getClientAddr(clientList));
 		clientList.find(this->fd)->second->authenticate();
 	}
 }

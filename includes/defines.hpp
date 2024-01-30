@@ -69,6 +69,8 @@
 #define ERR_NOMOTD 422
 #define ERR_NOADMININFO 423
 #define ERR_FILEERROR 424
+#define ERR_INVALIDCHAR 425 //we made that up
+#define ERR_INVALIDCHAR_STR std::string("Invalid char detected")
 
 #define ERR_NONICKNAMEGIVEN 431
 #define ERR_NONICKNAMEGIVEN_STR std::string("No nickname given")

@@ -1,9 +1,8 @@
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), authenticated(false)
+Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), authenticated(false), nickRegistered(false), userRegistered(false)
 {
 	Log::out("new connection with " + this->address);
-	this->addMsg("Welcome to IRC");
 }
 
 Client::~Client()
@@ -73,11 +72,15 @@ void Client::setUser(const std::string &pUser, const std::string &pRealname)
 {
 	this->user = pUser;
 	this->realName = pRealname;
+	this->userRegistered = true;
+	Log::out("user set to " + pUser + " (" + pRealname + ")" + " " + this->address);
 }
 void Client::setNickname(const std::string &pNickname)
 {
 	nickname = pNickname;
-	Log::out("New user nickname " + pNickname);
+	this->nickRegistered = true;
+	Log::out("user nickname set to " + pNickname
+			+ " " + this->address);
 }
 
 const std::string &Client::getNickname() const
