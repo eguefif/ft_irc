@@ -8,7 +8,7 @@ void CmdPass::execute(std::map<int, Client *> &clientList)
 
 	if (errorMsg.length())
 		clientList.find(this->fd)->second->addMsg(errorMsg);
-	if (this->params[0] == this->password)
+	else if (this->params[0] == this->password)
 	{
 		Log::out("User registered " + clientList.find(this->fd)->second->getAddress());
 		clientList.find(this->fd)->second->authenticate();
@@ -17,16 +17,26 @@ void CmdPass::execute(std::map<int, Client *> &clientList)
 
 std::string CmdPass::checkError(std::map<int, Client *> &clientList)
 {
-	(void)clientList;
 	if (!this->params.size())
+	{
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
 			this->getClientNick(clientList),
 			ERR_NEEDMOREPARAMS_STR);
+	}
+	else if (this->params[0] != this->password || this->params.size() != 1)
+	{
+		return this->createErrorMsg(
+			ERR_PASSWDMISMATCH,
+			this->getClientNick(clientList),
+			ERR_PASSWDMISMATCH_STR);
+	}
+	else if (clientList.find(this->fd)->second->isAuthenticated())
+	{
+		return this->createErrorMsg(
+			ERR_ALREADYREGISTRED,
+			this->getClientNick(clientList),
+			ERR_ALREADYREGISTRED_STR);
+	}
 	return std::string();
 }
-const std::string &ACmd::getClientNick(std::map<int, Client *> &clientList) const
-{
-	return clientList.find(this->fd)->second->getNickname();
-}
-

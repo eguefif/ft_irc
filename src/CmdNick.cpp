@@ -18,6 +18,11 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 
 std::string CmdNick::checkError(std::map<int, Client *> &clientList)
 {
+	if (!this->isClientAuthenticated(clientList))
+		return (this->createErrorMsg(
+				ERR_NOTREGISTERED,
+				this->getClientNick(clientList),
+				ERR_NOTREGISTERED_STR));
 	if (!this->params.size())
 		return (this->createErrorMsg(
 					ERR_NONICKNAMEGIVEN,

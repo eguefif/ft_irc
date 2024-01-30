@@ -71,6 +71,21 @@ std::string ACmd::createErrorMsg(int num, std::string nickname, std::string erro
 	return retval;
 }
 
+const std::string &ACmd::getClientNick(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->getNickname();
+}
+
+bool ACmd::isClientAuthenticated(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->isAuthenticated();
+}
+
+bool ACmd::isClientRegistered(std::map<int, Client *> &clientList) const
+{
+	return clientList.find(this->fd)->second->isRegistered();
+}
+
 ACmd::ACmd(const ACmd &other) : fd(other.fd)
 {
 }
