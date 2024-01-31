@@ -94,12 +94,13 @@ async def test_register_opposite(clean_log):
     except TimeoutError:
         error = 0
     else:
+        welcome_msg = f"{PREFIX} 001 Welcome to IRC!{SEP}"
         data2 = data2.decode()
         data = data.decode()
         assert len(data2) == 0, "Too much data received"
         assert error
-        assert len(data) == len("Welcome to IRC!\n")
-        assert data == "Welcome to IRC!\n"
+        assert len(data) == len(welcome_msg)
+        assert data == welcome_msg
     finally:
         writer.close()
         await writer.wait_closed()
@@ -111,9 +112,23 @@ async def test_change_nickname(clean_log):
     command = f"NICK Manu2{SEP}"
     writer.write(command.encode())
     await writer.drain()
-    writer.close()
-    await writer.wait_closed()
     time.sleep(0.3)
+
+    try:
+        async with asyncio.timeout(0.2):
+            data = await reader.readline()
+            data2 = await reader.readline()
+    except TimeoutError:
+        error = 0
+    else:
+        confirm = f"{PREFIX} 001 Manu2 :Your nickname was changed{SEP}"
+        data2 = data2.decode()
+        data = data.decode()
+        assert len(data2) == len(confirm)
+        assert data2 == confirm
+    finally:
+        writer.close()
+        await writer.wait_closed()
 
     with open("../ft_irc.log", "r") as file:
         content = file.readlines()
@@ -123,3 +138,91 @@ async def test_change_nickname(clean_log):
         to_cmp = content[-2].strip()
         to_cmp = to_cmp.split("] ")
         assert to_cmp[1] == "user nickname set to Manu2 " + HOST
+
+@pytest.mark.asyncio
+async def test_create_channel(clean_log):
+    reader, writer = await log_user_test("test", "user", "robert malin")
+    cmd = f"JOIN #chantest{SEP}"
+    writer.write(cmd.encode())
+    await writer.drain()
+    time.sleep(0.1)
+
+    rep1 = ""
+    rep2 = ""
+    rep3 = ""
+    try:
+        async with asyncio.timeout(0.2):
+            rep1 = await reader.readline()
+            rep2 = await reader.readline()
+            rep3 = await reader.readline()
+    except TimeoutError:
+        error = 0
+        assert len(rep1) != 0, "no server reply"
+        assert len(rep2) != 0, "no server reply"
+        assert len(rep3) != 0, "no server reply"
+    else:
+        confirm1 = f"{PREFIX} JOIN :#chantest{SEP}"
+        confirm2 = f"{PREFIX} 353 test = #chantest :test{SEP}"
+        confirm3 = f"{PREFIX} 366 test #chantest:End of /NAMES list.{SEP}"
+        rep1 = rep1.decode()
+        rep2 = rep2.decode()
+        rep3 = rep3.decode()
+        assert len(rep1) != 0, "no server reply"
+        assert len(rep2) != 0, "no server reply"
+        assert len(rep3) != 0, "no server reply"
+        assert rep1 == confirm1
+        assert rep2 == confirm2
+        assert rep3 == confirm3
+    finally:
+        writer.close()
+        await writer.wait_closed()
+
+@pytest.mark.asyncio
+async def test_join_channel(clean_log):
+    reader, writer = await log_user_test("test", "user", "robert malin")
+    cmd = f"JOIN #chantest{SEP}"
+    writer.write(cmd.encode())
+    await writer.drain()
+    writer.close()
+    await writer.wait_closed()
+    reader, writer = await log_user_test("test2", "user2", "robert malin2")
+    cmd = f"JOIN #chantest{SEP}"
+    writer.write(cmd.encode())
+    await writer.drain()
+    time.sleep(0.1)
+
+    rep1 = ""
+    rep2 = ""
+    rep3 = ""
+    try:
+        async with asyncio.timeout(0.4):
+            for _ in range(5):
+                _ = await reader.readline()
+            rep1 = await reader.readline()
+            rep2 = await reader.readline()
+            rep3 = await reader.readline()
+    except TimeoutError:
+        error = 0
+        assert len(rep1) != 0, "no server reply"
+        assert len(rep2) != 0, "no server reply"
+        assert len(rep3) != 0, "no server reply"
+    else:
+        confirm1 = f"{PREFIX} JOIN :#chantest{SEP}"
+        confirm2 = f"{PREFIX} 353 test = #chantest :test test2{SEP}"
+        confirm3 = f"{PREFIX} 366 test #chantest:End of /NAMES list.{SEP}"
+        assert len(rep1) != 0, "no server reply"
+        assert len(rep2) != 0, "no server reply"
+        assert len(rep3) != 0, "no server reply"
+        print(rep1, rep2, rep3)
+        assert 1 == 0
+        rep1 = rep1.decode()
+        rep2 = rep2.decode()
+        rep3 = rep3.decode()
+        assert len(data2) == len(confirm)
+        assert rep1 == confirm1
+        assert rep2 == confirm2
+        assert rep3 == confirm3
+    finally:
+        writer.close()
+        await writer.wait_closed()
+

@@ -153,7 +153,7 @@ void Server::handlePollout()
 			{
 				write(pfds[i].fd, message.c_str(),
 							message.length() > MAX_MSG_SIZE - 2 ? MAX_MSG_SIZE - 2 : message.length());
-				write(pfds[i].fd, EOM.c_str(), 1);
+				write(pfds[i].fd, EOM.c_str(), 2);
 			}
 		}
 	}

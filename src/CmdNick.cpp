@@ -7,6 +7,7 @@ CmdNick::CmdNick(const int &pFd, const std::string pMessage): ACmd(pFd, pMessage
 void CmdNick::execute(std::map<int, Client *> &clientList)
 {
 	std::string errorMsg = this->checkError(clientList);
+
 	if (errorMsg.length())	
 		clientList.find(this->fd)->second->addMsg(errorMsg);
 	else
@@ -16,7 +17,9 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 			clientList.find(this->fd)->second->setNickname(this->getNewNickname());
 			if (clientList.find(this->fd)->second->isRegistered())
 				{
-					clientList.find(this->fd)->second->addMsg("Welcome to IRC!");
+					std::string welcomeMsg = this->createReplyMsg(RPL_WELCOME, this->getNewNickname(),
+						   	RPL_WELCOME_STR);
+					clientList.find(this->fd)->second->addMsg(welcomeMsg);
 					Log::out("client registered: "
 							+ this->getClientNick(clientList)
 							+ " "
@@ -24,7 +27,12 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 				}
 		}
 		else
+		{
 				clientList.find(this->fd)->second->setNickname(this->getNewNickname());
+				std::string confirmNickChg = this->createReplyMsg(RPL_WELCOME, this->getNewNickname(),
+						RPL_CONFIRM_NICK_CHANGE);
+				clientList.find(this->fd)->second->addMsg(confirmNickChg);
+		}
 	}
 }
 

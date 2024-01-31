@@ -15,7 +15,10 @@ void CmdUser::execute(std::map<int, Client *> &clientList)
 				this->params[3]);
 		if (clientList.find(this->fd)->second->isRegistered())
 		{
-			clientList.find(this->fd)->second->addMsg("Welcome to IRC!");
+			std::string welcomeMsg = this->createReplyMsg(RPL_WELCOME,
+							this->getClientNick(clientList),
+						   	RPL_WELCOME_STR);
+			clientList.find(this->fd)->second->addMsg(welcomeMsg);
 			Log::out("new client registered: "
 					+ this->getClientNick(clientList)
 					+ " "

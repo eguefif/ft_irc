@@ -113,3 +113,35 @@ async def test_errors_user_already_registered(clean_log):
     await writer_to_close.wait_closed()
     assert len(retval[1]);
     assert retval[1] == f"{PREFIX} 462 test test * 0 Yoo Yoo :You may not reregister"
+
+test_command = [
+        ("JOIN" + SEP, f"{PREFIX} 461 :Not enough parameters"),
+        ("JOIN #test\018" + SEP, f"{PREFIX} 425 #test\018 :Invalid char detected"),
+        ("JOIN #test +a" + SEP, f"{PREFIX} 475 #test +a :Cannot join channel (+k)"),
+        ("JOIN #test +p" + SEP, f"{PREFIX} 475 #test +p :Cannot join channel (+k)"),
+        ("JOIN #test +s" + SEP, f"{PREFIX} 475 #test +s :Cannot join channel (+k)"),
+        ("JOIN #test +n" + SEP, f"{PREFIX} 475 #test +n :Cannot join channel (+k)"),
+        ("JOIN #test +m" + SEP, f"{PREFIX} 475 #test +m :Cannot join channel (+k)"),
+        ("JOIN #test +b" + SEP, f"{PREFIX} 475 #test +b :Cannot join channel (+k)"),
+        ("JOIN #test +v" + SEP, f"{PREFIX} 475 #test +v :Cannot join channel (+k)"),
+        ]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("command, expect", test_command)
+async def test_errors_channel(clean_log, command, expect):
+    reader, writer_to_close = await log_user_test("test", "truc", "Truch muche")
+    cmd = f"JOIN #chantest{SEP}"
+    writer_to_close.write(command.encode())
+    await writer_to_close.drain()
+
+    try:
+        async with asyncio.timeout(0.1):
+            _ = await reader.readline()
+            retval = await reader.readline()
+    except TimeoutError:
+        retval = ""
+    retval = await get_read_content(reader)
+    writer_to_close.close()
+    await writer_to_close.wait_closed()
+    assert len(retval[1]);
+    assert retval[1] == expect

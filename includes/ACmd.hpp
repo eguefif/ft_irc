@@ -32,7 +32,8 @@ class ACmd
 		const std::string &getClientAddr(std::map<int, Client *> &clientList) const;
 		bool isClientAuthenticated(std::map<int, Client *> &clientList) const;
 		bool isClientRegistered(std::map<int, Client *> &clientList) const;
-		std::string createErrorMsg(int num, std::string nickname, std::string error);
+		std::string createErrorMsg(std::string num, std::string nickname, std::string error);
+		std::string createReplyMsg(const std::string &num, const std::string &nickname, const std::string &msg);
 
 	private:
 		ACmd();

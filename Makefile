@@ -23,7 +23,10 @@ $(NAME): $(OBJ) $(INC)
 $(ODIR)%.o: $(SDIR)%.cpp
 	$(CC) -c $< -o $@ -I$(IDIR) $(CFLAGS)
 
-.PHONY: fclean clean re all obj_dir
+run: all
+	./ircserv 6667 test
+
+.PHONY: fclean clean re all obj_dir run
 
 test: all
 	./test/make_test.sh
