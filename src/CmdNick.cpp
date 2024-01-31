@@ -4,9 +4,10 @@ CmdNick::CmdNick(const int &pFd, const std::string pMessage): ACmd(pFd, pMessage
 {
 }
 
-void CmdNick::execute(std::map<int, Client *> &clientList)
+void CmdNick::execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList)
 {
-	std::string errorMsg = this->checkError(clientList);
+	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())	
 		clientList.find(this->fd)->second->addMsg(errorMsg);
@@ -36,8 +37,11 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 	}
 }
 
-std::string CmdNick::checkError(std::map<int, Client *> &clientList)
+std::string CmdNick::checkError(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList)
 {
+	(void) channelList;
+
 	if (!this->isClientAuthenticated(clientList))
 		return (this->createErrorMsg(
 				ERR_NOTREGISTERED,

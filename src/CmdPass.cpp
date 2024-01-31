@@ -2,9 +2,10 @@
 
 CmdPass::CmdPass(const int &pFd, const std::string &pMessage, const std::string &pPass): ACmd(pFd, pMessage), password(pPass) {}
 
-void CmdPass::execute(std::map<int, Client *> &clientList)
+void CmdPass::execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList)
 {
-	std::string errorMsg = this->checkError(clientList);
+	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())
 		clientList.find(this->fd)->second->addMsg(errorMsg);
@@ -15,8 +16,10 @@ void CmdPass::execute(std::map<int, Client *> &clientList)
 	}
 }
 
-std::string CmdPass::checkError(std::map<int, Client *> &clientList)
+std::string CmdPass::checkError(std::map<int, Client *> &clientList,
+			std::map<std::string, Channel *> &channelList)
 {
+	(void) channelList;
 	if (!this->params.size())
 	{
 		return this->createErrorMsg(

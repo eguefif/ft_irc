@@ -14,6 +14,7 @@
 #include <map>
 
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "ACmd.hpp"
 #include "Log.hpp"
 
@@ -35,6 +36,7 @@ class Server
 	
 	private:
 		std::map<int, Client*> clientList;
+		std::map<std::string, Channel*> channelList;
 		int port;
 		std::string pass;
 		int serverSocket;

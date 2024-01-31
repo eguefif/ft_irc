@@ -13,14 +13,16 @@ class CmdPass: public ACmd
 		~CmdPass() {};
 		CmdPass(const int &pFd, const std::string &pMessage, const std::string &pPass);
 
-		void execute(std::map<int, Client *> &clientList);
-		std::string checkError(std::map<int, Client *> &clientList);
+		void execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList);
 	
 	private:
-			CmdPass();
-			CmdPass(const CmdPass &other);
-			CmdPass &operator=(const CmdPass &other);
+		CmdPass();
+		CmdPass(const CmdPass &other);
+		CmdPass &operator=(const CmdPass &other);
+		std::string checkError(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList);
 
-			const std::string &password;
+		const std::string &password;
 
 };

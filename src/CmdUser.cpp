@@ -2,9 +2,10 @@
 
 CmdUser::CmdUser(const int &pFd, const std::string &pMessage): ACmd(pFd, pMessage) {}
 
-void CmdUser::execute(std::map<int, Client *> &clientList)
+void CmdUser::execute(std::map<int, Client *> &clientList,
+			std::map<std::string, Channel *> &channelList)
 {
-	std::string errorMsg = this->checkError(clientList);
+	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())
 		clientList.find(this->fd)->second->addMsg(errorMsg);
@@ -27,8 +28,10 @@ void CmdUser::execute(std::map<int, Client *> &clientList)
 	}
 }
 
-std::string CmdUser::checkError(std::map<int, Client *> &clientList)
+std::string CmdUser::checkError(std::map<int, Client *> &clientList,
+			std::map<std::string, Channel *> &channelList)
 {
+	(void) channelList;
 	if (!clientList.find(this->fd)->second->isAuthenticated())
 	{
 		return this->createErrorMsg(

@@ -13,14 +13,16 @@ class CmdNick : public ACmd
 		~CmdNick() {};
 		CmdNick(const int &pFd, const std::string pMessage);
 
-		void execute(std::map<int, Client *> &clientList);
-		std::string checkError(std::map<int, Client *> &clientList);
+		void execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList);
 	
 	private:
 		CmdNick();
 		CmdNick(const CmdNick &other);
 		CmdNick &operator=(const CmdNick &other);
 		bool checkNickUnicity(std::map<int, Client *> &clientList);
+		std::string checkError(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList);
 
 		const std::string getNewNickname();
 };

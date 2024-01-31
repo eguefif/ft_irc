@@ -135,7 +135,7 @@ void Server::runCommands()
 			cmd = cmdFactory(msg, it->first, this->pass);
 			if (cmd)
 			{
-				cmd->execute(this->clientList);
+				cmd->execute(this->clientList, this->channelList);
 				delete cmd;
 			}
 		}

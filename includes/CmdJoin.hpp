@@ -7,20 +7,22 @@
 
 class Client;
 
-class CmdNick : public ACmd
+class CmdJoin : public ACmd
 {
 	public:
-		~CmdNick() {};
-		CmdNick(const int &pFd, const std::string pMessage);
+		~CmdJoin() {};
+		CmdJoin(const int &pFd, const std::string pMessage);
 
-		void execute(std::map<int, Client *> &clientList);
-		std::string checkError(std::map<int, Client *> &clientList);
+		void execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList);
 	
 	private:
-			CmdNick();
-			CmdNick(const CmdNick &other);
-			CmdNick &operator=(const CmdNick &other);
-			bool checkNickUnicity(std::map<int, Client *> &clientList);
+		CmdJoin();
+		CmdJoin(const CmdJoin &other);
+		CmdJoin &operator=(const CmdJoin &other);
+		bool checkChannelUnicity(std::map<std::string, Channel *> &channelList);
+		std::string checkError(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList);
 
-			const std::string getNewNickname();
+		const std::string getNewChannelName();
 };
