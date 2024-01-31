@@ -13,8 +13,8 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 	{
 		if (!clientList.find(this->fd)->second->isRegistered())
 		{
-				clientList.find(this->fd)->second->setNickname(this->getNewNickname());
-				if (clientList.find(this->fd)->second->isRegistered())
+			clientList.find(this->fd)->second->setNickname(this->getNewNickname());
+			if (clientList.find(this->fd)->second->isRegistered())
 				{
 					clientList.find(this->fd)->second->addMsg("Welcome to IRC!");
 					Log::out("client registered: "

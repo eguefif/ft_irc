@@ -34,7 +34,7 @@ std::string ACmd::getTrailingParam(int pos, const std::string &msg)
 	{
 		retval = msg.substr(pos, msg.length() - pos);
 	}
-	catch(std::exception e)
+	catch(std::exception &e)
 	{
 		return std::string();
 	}

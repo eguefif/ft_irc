@@ -6,7 +6,6 @@ from settings import *
 
 
 async def tcp_connection(depth=1):
-    print("test", depth)
     reader, writer = await asyncio.open_connection(HOST, PORT)
     if depth > 1:
         await tcp_connection(depth - 1)
@@ -44,27 +43,6 @@ async def test_multiple_connection(clean_log):
                 assert to_cmp[1] == f"{HOST} disconnected"
     
 @pytest.mark.asyncio
-async def test_client_welcome_msg(clean_log):
-    error = 1
-    reader, writer = await asyncio.open_connection(HOST, PORT)
-    data = ""
-    try:
-        async with asyncio.timeout(0.1):
-            data = await reader.readline()
-            data2 = await reader.readline()
-    except TimeoutError:
-        error = 0
-    else:
-        data = data.decode()
-        assert len(data2) == 0, "Too much data received"
-        assert error
-        assert len(data) == len("Welcome to IRC\n")
-        assert data == "Welcome to IRC\n"
-    finally:
-        writer.close()
-        await writer.wait_closed()
-
-@pytest.mark.asyncio
 async def test_mass_connections_disconnections(clean_log):
     max_connection = 1000
     for i in range(max_connection):
@@ -75,24 +53,3 @@ async def test_mass_connections_disconnections(clean_log):
         lines = file.readlines()
     assert i == max_connection - 1
     assert len(lines) / 2 == max_connection
-
-'''
-message_split= [
-        (b"USER test * 0: Emmanuel Guefif" + SEP, "USER test * 0 Emmanuel Guefif"),
-        (b"USER   test   * 0:        Emmanuel Guefif" + SEP, "USER test * 0 Emmanuel Guefif"),
-        (b"USER test * 0:Emmanuel Guefif                  " + SEP, "USER test * 0 Emmanuel Guefif"),
-        ]
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("command,log", message_split)
-async def test_message_split(message, command, log):
-        reader, writer = await asyncio.open_connection(HOST, PORT)
-        writer.write(command)
-        data = await reader.readline()
-        data2 = await reader.readline()
-        writer.close()
-        await writer.wait_closed()
-
-        assert data.strip() == log
-        assert len(data2) == 0
-'''

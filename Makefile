@@ -25,7 +25,7 @@ $(ODIR)%.o: $(SDIR)%.cpp
 
 .PHONY: fclean clean re all obj_dir
 
-test: re
+test: all
 	./test/make_test.sh
 
 clean:
