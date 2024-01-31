@@ -15,7 +15,7 @@ test_command = [
         ("USER " + SEP, f"{PREFIX} 461 * :Not enough parameters"),
         ("USER yoo * 0 :fda fsa\t" + SEP, f"{PREFIX} 425 * yoo * 0 fda fsa\t :Invalid char detected"),
         ("USER yoo * 0 :fda fsa\037" + SEP, f"{PREFIX} 425 * yoo * 0 fda fsa\037 :Invalid char detected"),
-        ("USER yoo * 0 fds :fda fsa\037" + SEP, f"{PREFIX} 461 * yoo * 0 fds fda fsa :Not enough parameters"),
+        ("USER yoo * 0 fds :fda fsa\037" + SEP, f"{PREFIX} 461 * yoo * 0 fds fda fsa\037 :Not enough parameters"),
         ]
 
 @pytest.mark.asyncio
