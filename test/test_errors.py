@@ -15,6 +15,7 @@ test_command = [
         ("USER " + SEP, f"{PREFIX} 461 * :Not enough parameters"),
         ("USER yoo * 0 :fda fsa\t" + SEP, f"{PREFIX} 425 * yoo * 0 fda fsa\t :Invalid char detected"),
         ("USER yoo * 0 :fda fsa\037" + SEP, f"{PREFIX} 425 * yoo * 0 fda fsa\037 :Invalid char detected"),
+        ("USER yoo * 0 fds :fda fsa\037" + SEP, f"{PREFIX} 461 * yoo * 0 fds fda fsa :Not enough parameters"),
         ]
 
 @pytest.mark.asyncio
@@ -102,7 +103,7 @@ async def test_errors_nick_unicity(clean_log):
         assert len(retval) != 2
 
 @pytest.mark.asyncio
-async def test_errors_nick_unicity(clean_log):
+async def test_errors_user_already_registered(clean_log):
     reader, writer_to_close = await log_user_test("test", "truc", "Truch muche")
     command = f"USER test * 0 :Yoo Yoo{SEP}"
     writer_to_close.write(command.encode())
