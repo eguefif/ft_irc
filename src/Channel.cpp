@@ -1,12 +1,48 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::vector<std::string> &params): name(params[0])
+Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), channelPass("")
 {
 	Log::out("new channel " + this->name + " created");
 }
 
 Channel::~Channel()
 {
+}
+
+bool Channel::isInviteOnly() const
+{
+	return this->inviteOnly;
+}
+
+bool Channel::isTopicOp() const
+{
+	return this->channelTopicOp;
+}
+
+bool Channel::isInvited(Client * client)
+{
+	for (std::vector<Client *>::iterator it = this->invited.begin();
+		it != this->invited.end(); ++it)
+	{
+		if (*it == client)
+			return true;
+	}
+	return false;
+}
+
+int Channel::getChannelMaxSize() const
+{
+	return this->channelMaxSize;
+}
+
+std::string Channel::getChannelPassword() const
+{
+	return this->channelPass;
+}
+
+int Channel::getUsersSize() const
+{
+	return this->users.size();
 }
 
 void Channel::addUser(Client *newUser)

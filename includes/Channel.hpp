@@ -13,6 +13,13 @@ class Channel
 		Channel(std::vector<std::string> &params);
 		~Channel();
 
+		bool isInviteOnly() const;
+		bool isTopicOp() const;
+		bool isInvited(Client *client);
+		int getChannelMaxSize() const;
+		std::string getChannelPassword() const;
+		int getUsersSize() const;
+
 		void addUser(Client *newUser);
 		void addOperator(Client *newOperator);
 		void broadcast(std::string msg, Client *sender);
@@ -28,9 +35,10 @@ class Channel
 //		std::string &topic;
 		std::vector<Client *> users;
 		std::vector<Client *> operators;
+		std::vector<Client *> invited;
 
 		bool inviteOnly;
-		bool channelTopicOpe;
+		bool channelTopicOp;
 		int channelMaxSize;
 		std::string channelPass;
 
