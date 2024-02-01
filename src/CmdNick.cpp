@@ -67,6 +67,11 @@ std::string CmdNick::checkError(std::map<int, Client *> &clientList,
 				ERR_INVALIDCHAR,
 				this->getClientNick(clientList),
 				ERR_INVALIDCHAR_STR);
+	if (this->getNewNickname()[0] == '#' || this->getNewNickname()[0] == ':')
+		return this->createErrorMsg(
+				ERR_INVALIDCHAR,
+				this->getClientNick(clientList),
+				ERR_INVALIDCHAR_STR);
 
 	return std::string();
 }

@@ -2,26 +2,76 @@
 
 CmdJoin::CmdJoin(const int &pFd, const std::string pMessage): ACmd(pFd, pMessage)
 {
+	if (this->params.size() >= 1)
+	{
+		std::stringstream paramChan(this->params[0]);
+		std::string channel;
+
+		while (std::getline(paramChan, channel, ','))
+		{
+			this->channels.push_back(channel);
+		}
+	}
+	if (this->params.size() >= 2)
+	{
+		std::stringstream paramKey(this->params[1]);
+		std::string key;
+
+		while (std::getline(paramKey, key, ','))
+		{
+			this->keys.push_back(key);
+		}
+	}
 }
 
 void CmdJoin::execute(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-	std::string errorMsg = this->checkError(clientList, channelList);
-	if (errorMsg.length())	
-		clientList.find(this->fd)->second->addMsg(errorMsg);
+	if (this->params.size() == 0)
+	{
+		clientList.find(this->fd)->second->addMsg(
+				this->createErrorMsg(
+					ERR_NEEDMOREPARAMS,
+					this->getClientNick(clientList) + " " + std::string("JOIN"),
+					ERR_NEEDMOREPARAMS_STR));
+		return;
+	}
 	else
 	{
-		Client *currentClient = clientList.find(this->fd)->second;
-		if (!checkChannelUnicity(channelList))
+		int counter = 0;
+
+		for (std::vector<std::string>::iterator it = this->channels.begin();
+				it != this->channels.end();
+				++it)
 		{
-			Channel*	newChannel = new Channel(this->params);
-			newChannel->addOperator(currentClient);
-			newChannel->addUser(currentClient);
-			channelList.insert(std::make_pair(this->params[0], newChannel));
+			this->params.clear();
+			this->params.push_back(*it);
+			try
+			{
+				this->params.push_back(this->keys.at(counter));
+			}
+			catch(std::exception &e)
+			{
+				this->params.push_back(std::string());
+			}
+			std::string errorMsg = this->checkError(clientList, channelList);
+			if (errorMsg.length())	
+				clientList.find(this->fd)->second->addMsg(errorMsg);
+			else
+			{
+				Client *currentClient = clientList.find(this->fd)->second;
+				if (!checkChannelUnicity(channelList))
+				{
+					Channel *newChannel = new Channel(this->params);
+					newChannel->addOperator(currentClient);
+					newChannel->addUser(currentClient);
+					channelList.insert(std::make_pair(this->params[0], newChannel));
+				}
+				else
+					channelList.find(this->params[0])->second->addUser(currentClient);
+				counter++;
+			}
 		}
-		else
-			channelList.find(this->params[0])->second->addUser(currentClient);
 	}
 }
 
@@ -30,16 +80,12 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 {
 	Client *currentClient = clientList.find(this->fd)->second;
 	std::map<std::string, Channel *>::iterator it = channelList.find(this->params[0]);
+
 	if (!this->isClientRegistered(clientList))
 		return (this->createErrorMsg(
 					ERR_NOTREGISTERED,
 					"",
 					ERR_NOTREGISTERED_STR));
-	if (!this->params.size())
-		return (this->createErrorMsg(
-					ERR_NEEDMOREPARAMS,
-					"",
-					ERR_NEEDMOREPARAMS_STR));
 	if (params[0][0] != '#')
 		return (this->createErrorMsg(
 					ERR_NOSUCHCHANNEL,
@@ -58,6 +104,12 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 						ERR_INVITEONLYCHAN,
 						this->params[0],
 						ERR_INVITEONLYCHAN_STR));
+		std::string channelPass = currentChannel->getChannelPassword();
+		if (channelPass.length() && this->params[1].length() && channelPass != this->params[1])
+			return (this->createErrorMsg(
+						ERR_PASSWDMISMATCH,
+						this->getClientNick(clientList) + " " + std::string("JOIN"),
+						ERR_PASSWDMISMATCH_STR));
 	}
 	return std::string();
 }
