@@ -1,6 +1,6 @@
 #include "CmdJoin.hpp"
 
-CmdJoin::CmdJoin(const int &pFd, const std::string pMessage): ACmd(pFd, pMessage)
+CmdJoin::CmdJoin(const int &pFd, const std::string pMessage): ACmd(pFd, pMessage), inviteOnly(false), channelTopicOpe(true), channelMaxSize(0), channelPass("")
 {
 }
 
@@ -28,7 +28,9 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-	(void) channelList;
+	Client *currentClient = clientList.find(this->fd)->second;
+	Channel *currentChannel = channelList.find(this->params[0])->second;
+
 	if (!this->isClientRegistered(clientList))
 		return (this->createErrorMsg(
 					ERR_NOTREGISTERED,
@@ -39,6 +41,22 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 					ERR_NEEDMOREPARAMS,
 					"",
 					ERR_NEEDMOREPARAMS_STR));
+	if (params[0][0] != '#')
+		return (this->createErrorMsg(
+					ERR_NOSUCHCHANNEL,
+					this->params[0],
+					ERR_NOSUCHCHANNEL_STR));
+	if (this->users.size() >= this->channelMaxSize && this->channelMaxSize != 0)
+		return (this->createErrorMsg(
+					ERR_CHANNELISFULL
+					this->params[0],
+					ERR_CHANNELISFULL_STR));
+	if (currentChannel->inviteOnly && !isInvited(currentClient))
+		return (this->createErrorMsg(
+					ERR_INVITEONLYCHAN
+					this->params[0],
+					ERR_INVITEONLYCHAN_STR));
+	// if (currentChannel->channelPass.length())
 	return std::string();
 }
 

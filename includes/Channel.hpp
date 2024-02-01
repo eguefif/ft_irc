@@ -29,6 +29,11 @@ class Channel
 		std::vector<Client *> users;
 		std::vector<Client *> operators;
 
+		bool inviteOnly;
+		bool channelTopicOpe;
+		int channelMaxSize;
+		std::string channelPass;
+
 		std::string	newJoinMsg(Client *newUser);
 		std::string getUserNames(Client *newUser);
 		std::string endOfNames(Client *user);

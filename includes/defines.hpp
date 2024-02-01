@@ -57,6 +57,7 @@
 #define ERR_NOSUCHNICK std::string("401")
 #define ERR_NOSUCHSERVER std::string("402")
 #define ERR_NOSUCHCHANNEL std::string("403")
+#define ERR_NOSUCHCHANNEL_STR std::string("No such channel")
 #define ERR_CANNOTSENDTOCHAN std::string("404")
 #define ERR_TOOMANYCHANNELS std::string("405")
 #define ERR_WASNOSUCHNICK std::string("406")
@@ -104,8 +105,10 @@
 #define ERR_KEYSET std::string("467")
 
 #define ERR_CHANNELISFULL std::string("471")
+#define ERR_CHANNELISFULL_STR std::string("Cannot join channel (+l)")
 #define ERR_UNKNOWNMODE std::string("472")
 #define ERR_INVITEONLYCHAN std::string("473")
+#define ERR_INVITEONLYCHAN_STR std::string("Cannot join channel (+i)")
 #define ERR_BANNEDFROMCHAN std::string("474")
 #define ERR_BADCHANNELKEY std::string("475")
 #define ERR_BADCHANMASK std::string("476")
