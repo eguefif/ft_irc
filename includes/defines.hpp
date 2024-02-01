@@ -42,6 +42,7 @@
 #define RPL_ENDOFWHO std::string("315")
 #define RPL_NAMREPLY std::string("353")
 #define RPL_ENDOFNAMES std::string("366")
+#define RPL_ENDOFNAMES_STR std::string("End of /NAMES list")
 
 #define RPL_LINKS std::string("364")
 #define RPL_ENDOFLINKS std::string("365")

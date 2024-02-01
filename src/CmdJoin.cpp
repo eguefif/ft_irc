@@ -16,8 +16,8 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 		if (!checkChannelUnicity(channelList))
 		{
 			Channel*	newChannel = new Channel(this->params);
-			newChannel->addUser(currentClient);
 			newChannel->addOperator(currentClient);
+			newChannel->addUser(currentClient);
 			channelList.insert(std::make_pair(this->params[0], newChannel));
 		}
 		else
@@ -28,8 +28,12 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-	(void) clientList;
 	(void) channelList;
+	if (!this->isClientRegistered(clientList))
+		return (this->createErrorMsg(
+					ERR_NOTREGISTERED,
+					"",
+					ERR_NOTREGISTERED_STR));
 	if (!this->params.size())
 		return (this->createErrorMsg(
 					ERR_NEEDMOREPARAMS,

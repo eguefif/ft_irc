@@ -58,6 +58,7 @@ class Server
 		void runListen();
 		void setAddressServerStruct();
 		void initPoll();
+
 		void runPoll();
 		void handleNewconnection();
 		void newConnection();
@@ -69,5 +70,6 @@ class Server
 		bool isConnectionClosed(const int &retVal) const;
 		void runCommands();
 		void handlePollout();
+		void removeClientFromChannels(Client *user);
 		void removeClient(const int &fd);
 };

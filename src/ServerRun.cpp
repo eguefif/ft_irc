@@ -104,6 +104,7 @@ void Server::removeClosedConnections()
 		{
 			if (this->pfds[j].fd == this->closedPfdsIndex[i])
 			{
+				this->removeClientFromChannels(this->clientList.find(this->pfds[j].fd)->second);
 				this->removeClient(this->pfds[j].fd);
 				close(this->pfds[j].fd);
 				this->pfds.erase(this->pfds.begin() + j);
@@ -113,6 +114,16 @@ void Server::removeClosedConnections()
 		}
 	}
 	this->closedPfdsIndex.clear();
+}
+
+void Server::removeClientFromChannels(Client *user)
+{
+	for (std::map<std::string, Channel *>::iterator it = channelList.begin();
+			it != channelList.end();
+			++it)
+	{
+		it->second->removeClient(user);
+	}
 }
 
 void Server::removeClient(const int &fd)
