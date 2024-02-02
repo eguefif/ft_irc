@@ -1,23 +1,22 @@
 #pragma once
 
-#include "Client.hpp"
 #include "ACmd.hpp"
+#include <map>
+#include <string>
 
-class Client;
-
-class CmdUser: public ACmd
+class CmdInvite: public ACmd
 {
 	public:
-		~CmdUser() {};
-		CmdUser(const int &pFd, const std::string &pMessage);
+		CmdInvite(const int &pFd, const std::string &pMessage);
+		~CmdInvite();
 
 		void execute(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
-	
+
 	private:
-		CmdUser();
-		CmdUser(const CmdUser &other);
-		CmdUser &operator=(const CmdUser &other);
+		CmdInvite(const CmdInvite &);
+		CmdInvite &operator=(const CmdInvite &);
+
 		std::string checkError(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
 };
