@@ -27,7 +27,7 @@ void CmdQuit::execute(std::map<int, Client *> &clientList,
 				it->second->addMsg(msg);
 		}
 		msg = this->getQuitMsg(this->getClientNick(clientList));
-		client->addMsg(msg);
+		client->addMsgNonRegistered(msg);
 	}
 }
 
