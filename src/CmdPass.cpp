@@ -24,7 +24,7 @@ std::string CmdPass::checkError(std::map<int, Client *> &clientList,
 	{
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + "PASS",
 			ERR_NEEDMOREPARAMS_STR);
 	}
 	else if (this->params[0] != this->password || this->params.size() != 1)

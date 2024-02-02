@@ -49,28 +49,28 @@ std::string CmdNick::checkError(std::map<int, Client *> &clientList,
 				ERR_NOTREGISTERED_STR));
 	if (!this->params.size())
 		return (this->createErrorMsg(
-					ERR_NONICKNAMEGIVEN,
-					"",
-					ERR_NONICKNAMEGIVEN_STR));
+				ERR_NONICKNAMEGIVEN,
+				this->getClientNick(clientList),
+				ERR_NONICKNAMEGIVEN_STR));
 	if (this->params.size() > 1 || this->params[0].length() > 9)
 		return (this->createErrorMsg(
 				ERR_ERRONEUSNICKNAME,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList) + " " + getStringParams(),
 				ERR_ERRONEUSNICKNAME_STR));
 	if (!checkNickUnicity(clientList))
 		return (this->createErrorMsg(
 				ERR_NICKNAMEINUSE,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList)  + " " + this->getNewNickname(),
 				ERR_NICKNAMEINUSE_STR));
 	if (!isWord(this->getNewNickname()))
 		return this->createErrorMsg(
 				ERR_INVALIDCHAR,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList) + " " + getStringParams(),
 				ERR_INVALIDCHAR_STR);
 	if (this->getNewNickname()[0] == '#' || this->getNewNickname()[0] == ':')
 		return this->createErrorMsg(
 				ERR_INVALIDCHAR,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList) + " " + getStringParams(),
 				ERR_INVALIDCHAR_STR);
 
 	return std::string();

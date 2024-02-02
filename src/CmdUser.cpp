@@ -43,21 +43,21 @@ std::string CmdUser::checkError(std::map<int, Client *> &clientList,
 	{
 		return this->createErrorMsg(
 			ERR_ALREADYREGISTRED,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + this->getStringParams(),
 			ERR_ALREADYREGISTRED_STR);
 	}
 	else if (this->params.size() != 4)
 	{
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + "USER",
 			ERR_NEEDMOREPARAMS_STR);
 	}
 	else if (!isPrint(this->params[0]) || !isPrint(this->params[3]))
 	{
 		return this->createErrorMsg(
 			ERR_INVALIDCHAR,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + this->getStringParams(),
 			ERR_INVALIDCHAR_STR);
 	}
 	return std::string();

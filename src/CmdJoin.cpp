@@ -78,37 +78,37 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-	Client *currentClient = clientList.find(this->fd)->second;
+//Client *currentClient = clientList.find(this->fd)->second;
 	std::map<std::string, Channel *>::iterator it = channelList.find(this->params[0]);
 
 	if (!this->isClientRegistered(clientList))
 		return (this->createErrorMsg(
 					ERR_NOTREGISTERED,
-					"",
+					this->getClientNick(clientList),
 					ERR_NOTREGISTERED_STR));
 	if (params[0][0] != '#')
 		return (this->createErrorMsg(
 					ERR_NOSUCHCHANNEL,
-					this->params[0],
+					this->getClientNick(clientList) + " " + this->params[0],
 					ERR_NOSUCHCHANNEL_STR));
+	if (!isPrint(this->params[0]))
+		return (this->createErrorMsg(
+					ERR_INVALIDCHAR,
+					this->getClientNick(clientList) + " " + this->params[0],
+					ERR_INVALIDCHAR_STR));
 	if (it != channelList.end())
 	{
 		Channel *currentChannel = it->second;
 		if (currentChannel->getChannelMaxSize() != 0 && currentChannel->getUsersSize() >= currentChannel->getChannelMaxSize())
 			return (this->createErrorMsg(
 						ERR_CHANNELISFULL,
-						this->params[0],
+						this->getClientNick(clientList) + " " + this->params[0],
 						ERR_CHANNELISFULL_STR));
-		if (currentChannel->isInviteOnly() && !currentChannel->isInvited(currentClient))
-			return (this->createErrorMsg(
-						ERR_INVITEONLYCHAN,
-						this->params[0],
-						ERR_INVITEONLYCHAN_STR));
 		std::string channelPass = currentChannel->getChannelPassword();
 		if (channelPass.length() && this->params[1].length() && channelPass != this->params[1])
 			return (this->createErrorMsg(
 						ERR_PASSWDMISMATCH,
-						this->getClientNick(clientList) + " " + std::string("JOIN"),
+						this->getClientNick(clientList),
 						ERR_PASSWDMISMATCH_STR));
 	}
 	return std::string();
