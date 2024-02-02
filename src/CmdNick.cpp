@@ -10,7 +10,7 @@ void CmdNick::execute(std::map<int, Client *> &clientList,
 	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())	
-		clientList.find(this->fd)->second->addMsg(errorMsg);
+		clientList.find(this->fd)->second->addMsgNonRegistered(errorMsg);
 	else
 	{
 		if (!clientList.find(this->fd)->second->isRegistered())

@@ -8,6 +8,7 @@ void Server::run()
 		this->handleNewconnection();
 		this->handlePauline();
 		this->runCommands();
+		this->removeClosedConnections();
 		this->handlePollout();
 	}
 	close(this->serverSocket);
@@ -98,6 +99,13 @@ bool Server::isConnectionClosed(const int &retVal) const
 
 void Server::removeClosedConnections()
 {
+	for (std::map<int, Client *>::iterator it = this->clientList.begin();
+			it != this->clientList.end();
+			++it)
+	{
+		if (it->second->isDisconnected())
+			this->closedPfdsIndex.push_back(it->first);
+	}
 	for (int i = 0; i < (int)this->closedPfdsIndex.size(); ++i)
 	{
 		for (unsigned long j = 0; j < this->pfds.size(); ++j)

@@ -1,6 +1,9 @@
 #include "Client.hpp"
 
-Client::Client(const std::string &pAddress): nickname("*"), address(pAddress), authenticated(false), nickRegistered(false), userRegistered(false)
+Client::Client(const std::string &pAddress):
+			nickname("*"), address(pAddress),
+			authenticated(false), nickRegistered(false), userRegistered(false),
+			isConnected(true)
 {
 	Log::out("new connection with " + this->address);
 }
@@ -16,6 +19,12 @@ const std::string &Client::getAddress() const
 }
 
 void Client::addMsg(const std::string &msg)
+{
+	if (this->isRegistered())
+		this->outputQueue.push(msg);
+}
+
+void Client::addMsgNonRegistered(const std::string &msg)
 {
 	this->outputQueue.push(msg);
 }
@@ -92,4 +101,17 @@ const std::string &Client::getNickname() const
 bool Client::isRegistered() const
 {
 	return this->authenticated && this->nickRegistered && this->userRegistered;
+}
+
+void Client::disconnect()
+{
+	this->isConnected = false;
+	this->userRegistered = false;
+	this->nickRegistered = false;
+	this->authenticated = false;
+}
+
+bool  Client::isDisconnected() const
+{
+	return !(this->isConnected);
 }

@@ -12,7 +12,9 @@ class Client
 	public:
 		Client(const std::string &pAddress);
 		~Client();
+
 		void addMsg(const std::string &msg);
+		void addMsgNonRegistered(const std::string &msg);
 		std::string getMsg();
 
 		const std::string &getAddress() const;
@@ -22,6 +24,8 @@ class Client
 		const std::string &getNickname() const;
 		void setNickname(const std::string &nickname);
 		void setUser(const std::string &pUser, const std::string &pRealname);
+		void disconnect();
+		bool isDisconnected() const;
 
 		void updateMsg(const std::string &message);
 		std::string getNextMessage();
@@ -39,5 +43,6 @@ class Client
 		bool authenticated;
 		bool nickRegistered;
 		bool userRegistered;
+		bool isConnected;
 		std::queue<std::string> outputQueue;
 };
