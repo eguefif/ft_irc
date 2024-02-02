@@ -111,3 +111,14 @@ Server::~Server()
 	for (nfds_t i = 0; i < this->numSockets; ++i)
 		close(this->pfds[i].fd);
 }
+void Server::freeMemory()
+{
+	for (std::map<int, Client *>::iterator it = this->clientList.begin();
+			it != this->clientList.end();
+			++it)
+		delete it->second;
+	for (std::map<std::string, Channel *>::iterator it = this->channelList.begin();
+			it != this->channelList.end();
+			++it)
+		delete it->second;
+}

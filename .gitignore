@@ -1,6 +1,7 @@
 *.swp
 *.swo
 *.o
+*.dSYM
 
 compile_flags.txt
 

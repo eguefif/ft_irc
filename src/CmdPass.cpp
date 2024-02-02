@@ -8,7 +8,7 @@ void CmdPass::execute(std::map<int, Client *> &clientList,
 	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())
-		clientList.find(this->fd)->second->addMsg(errorMsg);
+		clientList.find(this->fd)->second->addMsgNonRegistered(errorMsg);
 	else if (this->params[0] == this->password)
 	{
 		Log::out("user authenticated " + this->getClientAddr(clientList));

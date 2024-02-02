@@ -72,4 +72,6 @@ class Server
 		void handlePollout();
 		void removeClientFromChannels(Client *user);
 		void removeClient(const int &fd);
+
+		void freeMemory();
 };
