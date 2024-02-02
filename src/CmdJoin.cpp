@@ -110,6 +110,11 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 						ERR_PASSWDMISMATCH,
 						this->getClientNick(clientList),
 						ERR_PASSWDMISMATCH_STR));
+		if (currentChannel->isInviteOnly() && !currentChannel->isInvited(clientList.find(this->fd)->second))
+			return (this->createErrorMsg(
+						ERR_INVITEONLYCHAN,
+						this->getClientNick(clientList) + " " + currentChannel->getChannelName(),
+						ERR_INVITEONLYCHAN_STR));
 	}
 	return std::string();
 }

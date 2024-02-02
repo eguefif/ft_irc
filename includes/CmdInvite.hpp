@@ -27,4 +27,5 @@ class CmdInvite: public ACmd
 						std::map<std::string, Channel *> &channelList);
 		bool isAlreadyInChan(std::string user, std::string channelName,
 						std::map<std::string, Channel *> &channelList);
+		Client * getClientFromName(std::string name, std::map<int, Client *> &clientList);
 };

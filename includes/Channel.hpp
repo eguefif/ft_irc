@@ -18,6 +18,7 @@ class Channel
 		bool isInvited(Client *client);
 		int getChannelMaxSize() const;
 		std::string getChannelPassword() const;
+		std::string getChannelName() const;
 		int getUsersSize() const;
 
 		void addUser(Client *newUser);

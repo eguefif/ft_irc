@@ -15,7 +15,10 @@ void CmdInvite::execute(std::map<int, Client *> &clientList, std::map<std::strin
 		clientList.find(this->fd)->second->addMsg(errorMsg);
 	else
 	{
-		channelList.find(this->params[1])->second->addUserInvited(clientList.find(this->fd)->second);
+		Channel * channel = channelList.find(this->params[1])->second;
+		Client * invited = this->getClientFromName(this->params[0], clientList);
+		if (invited)
+			channel->addUserInvited(invited);
 		Log::out(this->getClientNick(clientList) + " " + "invited" + " " + this->params[0] + " " + "to channel" + " " + this->params[1]);
 	}
 }
@@ -82,4 +85,14 @@ bool CmdInvite::isAlreadyInChan(std::string user, std::string channelName, std::
 {
 	Channel *channel = channelList.find(channelName)->second;
 	return channel->isAlreadyInChan(user);
+}
+
+Client * CmdInvite::getClientFromName(std::string name, std::map<int, Client *> &clientList)
+{
+	for (std::map<int, Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it)
+	{
+		if ((*it).second->getNickname() == name)
+			return (*it).second;
+	}
+	return 0;
 }
