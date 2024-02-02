@@ -55,7 +55,7 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 				this->params.push_back(std::string());
 			}
 			std::string errorMsg = this->checkError(clientList, channelList);
-			if (errorMsg.length())	
+			if (errorMsg.length())
 				clientList.find(this->fd)->second->addMsg(errorMsg);
 			else
 			{

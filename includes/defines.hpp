@@ -55,12 +55,14 @@
 #define RPL_ENDOFMOTD std::string("376")
 
 #define ERR_NOSUCHNICK std::string("401")
+#define ERR_NOSUCHNICK_STR std::string("No such nick/channel")
 #define ERR_NOSUCHSERVER std::string("402")
 #define ERR_NOSUCHCHANNEL std::string("403")
 #define ERR_NOSUCHCHANNEL_STR std::string("No such channel")
 #define ERR_CANNOTSENDTOCHAN std::string("404")
 #define ERR_TOOMANYCHANNELS std::string("405")
 #define ERR_WASNOSUCHNICK std::string("406")
+#define ERR_WASNOSUCHNICK_STR std::string("There was no such nickname")
 
 #define ERR_TOOMANYTARGETS std::string("407")
 #define ERR_NOORIGIN std::string("409")
@@ -86,7 +88,9 @@
 
 #define ERR_USERNOTINCHANNEL std::string("441")
 #define ERR_NOTONCHANNEL std::string("442")
+#define ERR_NOTONCHANNEL_STR std::string("You're not on that channel")
 #define ERR_USERONCHANNEL std::string("443")
+#define ERR_USERONCHANNEL_STR std::string("is already on channel")
 #define ERR_NOLOGIN std::string("444")
 #define ERR_SUMMONDISABLED std::string("445")
 #define ERR_USERSDISABLED std::string("446")
@@ -117,6 +121,7 @@
 
 #define ERR_NOPRIVILEGES std::string("481")
 #define ERR_CHANOPRIVSNEEDED std::string("482")
+#define ERR_CHANOPRIVSNEEDED_STR std::string("You're not channel operator")
 #define ERR_CANTKILLSERVER std::string("483")
 
 #define ERR_RESTRICTED std::string("484")

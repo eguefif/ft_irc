@@ -19,4 +19,12 @@ class CmdInvite: public ACmd
 
 		std::string checkError(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
+
+		bool checkIfNickExist(std::string nickname, std::map<int, Client *> &clientList);
+		bool checkUserInChan(Client *user, std::string channelName,
+						std::map<std::string, Channel *> &channelList);
+		bool checkUserIsOp(Client *user, std::string channelName,
+						std::map<std::string, Channel *> &channelList);
+		bool isAlreadyInChan(std::string user, std::string channelName,
+						std::map<std::string, Channel *> &channelList);
 };

@@ -5,6 +5,7 @@
 
 #include "Client.hpp"
 #include "Channel.hpp"
+#include "stringUtils.hpp"
 
 class Client;
 
