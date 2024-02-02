@@ -1,121 +1,127 @@
 #pragma once
 
 #define SERVER_PREFIX std::string(":ft_irc")
-#define EOM std::string("\n")
+#define EOM std::string("\015\n")
 #define MAX_MSG_SIZE 512
 #define HOST "0.0.0.0"
 #define SERV_MAX_CLIENTS 100
 
-#define RPL_WELCOME 001
-#define RPL_YOURHOST 002
-#define RPL_CREATED 003
-#define RPL_MYINFO 004
-#define RPL_BOUNCE 005
+#define RPL_WELCOME std::string("001")
+#define RPL_WELCOME_STR std::string("Welcome to our IRC")
+#define RPL_CONFIRM_NICK_CHANGE std::string("Your nickname was changed")
+#define RPL_YOURHOST std::string("002")
+#define RPL_CREATED std::string("003")
+#define RPL_MYINFO std::string("004")
+#define RPL_BOUNCE std::string("005")
 
-#define RPL_USERHOST 302
-#define RPL_ISON 303
-#define RPL_AWAY 301
-#define RPL_UNAWAY 305
-#define RPL_NOWAWAY 306
+#define RPL_USERHOST std::string("302")
+#define RPL_ISON std::string("303")
+#define RPL_AWAY std::string("301")
+#define RPL_UNAWAY std::string("305")
+#define RPL_NOWAWAY std::string("306")
 
-#define RPL_WHOISUSER 311
-#define RPL_WHOISSERVER 312
-#define RPL_WHOISOPERATOR 313
-#define RPL_WHOISIDLE 317
-#define RPL_ENDOFWHOIS 318
-#define RPL_WHOISCHANNELS 319
+#define RPL_WHOISUSER std::string("311")
+#define RPL_WHOISSERVER std::string("312")
+#define RPL_WHOISOPERATOR std::string("313")
+#define RPL_WHOISIDLE std::string("317")
+#define RPL_ENDOFWHOIS std::string("318")
+#define RPL_WHOISCHANNELS std::string("319")
 
-#define RPL_LISTSTART 321
-#define RPL_LIST 322
-#define RPL_LISTEND 323
+#define RPL_LISTSTART std::string("321")
+#define RPL_LIST std::string("322")
+#define RPL_LISTEND std::string("323")
 
-#define RPL_CHANNELMODEIS 324
-#define RPL_NOTOPIC 331
-#define RPL_TOPIC 332
-#define RPL_INVITING 341
-#define RPL_SUMMONING 342
+#define RPL_CHANNELMODEIS std::string("324")
+#define RPL_NOTOPIC std::string("331")
+#define RPL_TOPIC std::string("332")
+#define RPL_INVITING std::string("341")
+#define RPL_SUMMONING std::string("342")
 
-#define RPL_VERSION 351
-#define RPL_WHOREPLY 352
-#define RPL_ENDOFWHO 315
-#define RPL_NAMREPLY 353
-#define RPL_ENDOFNAMES 366
+#define RPL_VERSION std::string("351")
+#define RPL_WHOREPLY std::string("352")
+#define RPL_ENDOFWHO std::string("315")
+#define RPL_NAMREPLY std::string("353")
+#define RPL_ENDOFNAMES std::string("366")
+#define RPL_ENDOFNAMES_STR std::string("End of /NAMES list")
 
-#define RPL_LINKS 364
-#define RPL_ENDOFLINKS 365
-#define RPL_BANLIST 367
-#define RPL_ENDOFBANLIST 368
-#define RPL_INFO 371
-#define RPL_ENDOFINFO 374
-#define RPL_MOTDSTART 375
-#define RPL_MOTD 372
-#define RPL_ENDOFMOTD 376
+#define RPL_LINKS std::string("364")
+#define RPL_ENDOFLINKS std::string("365")
+#define RPL_BANLIST std::string("367")
+#define RPL_ENDOFBANLIST std::string("368")
+#define RPL_INFO std::string("371")
+#define RPL_ENDOFINFO std::string("374")
+#define RPL_MOTDSTART std::string("375")
+#define RPL_MOTD std::string("372")
+#define RPL_ENDOFMOTD std::string("376")
 
-#define ERR_NOSUCHNICK 401
-#define ERR_NOSUCHSERVER 402
-#define ERR_NOSUCHCHANNEL 403
-#define ERR_CANNOTSENDTOCHAN 404
-#define ERR_TOOMANYCHANNELS 405
-#define ERR_WASNOSUCHNICK 406
+#define ERR_NOSUCHNICK std::string("401")
+#define ERR_NOSUCHSERVER std::string("402")
+#define ERR_NOSUCHCHANNEL std::string("403")
+#define ERR_NOSUCHCHANNEL_STR std::string("No such channel")
+#define ERR_CANNOTSENDTOCHAN std::string("404")
+#define ERR_TOOMANYCHANNELS std::string("405")
+#define ERR_WASNOSUCHNICK std::string("406")
 
-#define ERR_TOOMANYTARGETS 407
-#define ERR_NOORIGIN 409
-#define ERR_NORECIPIENT 411
-#define ERR_NOTEXTTOSEND 412
-#define ERR_NOTOPLEVEL 413
-#define ERR_WILDTOPLEVEL 414
+#define ERR_TOOMANYTARGETS std::string("407")
+#define ERR_NOORIGIN std::string("409")
+#define ERR_NORECIPIENT std::string("411")
+#define ERR_NOTEXTTOSEND std::string("412")
+#define ERR_NOTOPLEVEL std::string("413")
+#define ERR_WILDTOPLEVEL std::string("414")
 
-#define ERR_UNKNOWNCOMMAND 421
-#define ERR_NOMOTD 422
-#define ERR_NOADMININFO 423
-#define ERR_FILEERROR 424
-#define ERR_INVALIDCHAR 425 //we made that up
+#define ERR_UNKNOWNCOMMAND std::string("421")
+#define ERR_NOMOTD std::string("422")
+#define ERR_NOADMININFO std::string("423")
+#define ERR_FILEERROR std::string("424")
+#define ERR_INVALIDCHAR std::string("425") //we made that up
 #define ERR_INVALIDCHAR_STR std::string("Invalid char detected")
 
-#define ERR_NONICKNAMEGIVEN 431
+#define ERR_NONICKNAMEGIVEN std::string("431")
 #define ERR_NONICKNAMEGIVEN_STR std::string("No nickname given")
-#define ERR_ERRONEUSNICKNAME 432
+#define ERR_ERRONEUSNICKNAME std::string("432")
 #define ERR_ERRONEUSNICKNAME_STR std::string("Erroneous nickname")
-#define ERR_NICKNAMEINUSE 433
+#define ERR_NICKNAMEINUSE std::string("433")
 #define ERR_NICKNAMEINUSE_STR std::string("Nickname is already in use") 
-#define ERR_NICKCOLLISION 436
+#define ERR_NICKCOLLISION std::string("436")
 
-#define ERR_USERNOTINCHANNEL 441
-#define ERR_NOTONCHANNEL 442
-#define ERR_USERONCHANNEL 443
-#define ERR_NOLOGIN 444
-#define ERR_SUMMONDISABLED 445
-#define ERR_USERSDISABLED 446
+#define ERR_USERNOTINCHANNEL std::string("441")
+#define ERR_NOTONCHANNEL std::string("442")
+#define ERR_USERONCHANNEL std::string("443")
+#define ERR_NOLOGIN std::string("444")
+#define ERR_SUMMONDISABLED std::string("445")
+#define ERR_USERSDISABLED std::string("446")
 
-#define ERR_NOTREGISTERED 451
+#define ERR_NOTREGISTERED std::string("451")
 #define ERR_NOTREGISTERED_STR std::string("You have not registered") 
-#define ERR_NEEDMOREPARAMS 461
+#define ERR_NEEDMOREPARAMS std::string("461")
 #define ERR_NEEDMOREPARAMS_STR std::string("Not enough parameters")
-#define ERR_ALREADYREGISTRED 462
+#define ERR_ALREADYREGISTRED std::string("462")
 #define ERR_ALREADYREGISTRED_STR std::string("You may not reregister")
-#define ERR_NOPERMFORHOST 463
-#define ERR_PASSWDMISMATCH 464
+#define ERR_NOPERMFORHOST std::string("463")
+#define ERR_PASSWDMISMATCH std::string("464")
 #define ERR_PASSWDMISMATCH_STR std::string("Password incorrect")
-#define ERR_YOUREBANNEDCREEP 465
-#define ERR_YOUWILLBEBANNED 466
-#define ERR_KEYSET 467
+#define ERR_YOUREBANNEDCREEP std::string("465")
+#define ERR_YOUWILLBEBANNED std::string("466")
+#define ERR_KEYSET std::string("467")
 
-#define ERR_CHANNELISFULL 471
-#define ERR_UNKNOWNMODE 472
-#define ERR_INVITEONLYCHAN 473
-#define ERR_BANNEDFROMCHAN 474
-#define ERR_BADCHANNELKEY 475
-#define ERR_BADCHANMASK 476
-#define ERR_NOCHANMODES 477
-#define ERR_BANLISTFULL 478
+#define ERR_CHANNELISFULL std::string("471")
+#define ERR_CHANNELISFULL_STR std::string("Cannot join channel (+l)")
+#define ERR_UNKNOWNMODE std::string("472")
+#define ERR_INVITEONLYCHAN std::string("473")
+#define ERR_INVITEONLYCHAN_STR std::string("Cannot join channel (+i)")
+#define ERR_BANNEDFROMCHAN std::string("474")
+#define ERR_BADCHANNELKEY std::string("475")
+#define ERR_BADCHANMASK std::string("476")
+#define ERR_NOCHANMODES std::string("477")
+#define ERR_BANLISTFULL std::string("478")
 
-#define ERR_NOPRIVILEGES 481
-#define ERR_CHANOPRIVSNEEDED 482
-#define ERR_CANTKILLSERVER 483
+#define ERR_NOPRIVILEGES std::string("481")
+#define ERR_CHANOPRIVSNEEDED std::string("482")
+#define ERR_CANTKILLSERVER std::string("483")
 
-#define ERR_RESTRICTED 484
-#define ERR_UNIQOPPRIVSNEEDED 485
+#define ERR_RESTRICTED std::string("484")
+#define ERR_UNIQOPPRIVSNEEDED std::string("485")
 
-#define ERR_NOOPERHOST 491
-#define ERR_UMODEUNKNOWNFLAG 501
-#define ERR_USERSDONTMATCH 502
+#define ERR_NOOPERHOST std::string("491")
+#define ERR_UMODEUNKNOWNFLAG std::string("501")
+#define ERR_USERSDONTMATCH std::string("502")

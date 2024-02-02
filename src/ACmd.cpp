@@ -59,17 +59,24 @@ void ACmd::logNewMessage()
 		Log::out("New message: empty"); 
 }
 
-std::string ACmd::createErrorMsg(int num, std::string nickname, std::string error)
+std::string ACmd::createErrorMsg(std::string num, std::string msg, std::string error)
 {
 	std::string retval;
 
-	retval += SERVER_PREFIX + " " + std::to_string(num);
-	if (nickname.length())
-		retval += " " + nickname;
-	for (std::vector<std::string>::iterator it = this->params.begin();
-			it != this->params.end(); ++it)
-		retval += " " + *it;
+	retval += SERVER_PREFIX + " " + num;
+	if (msg.length())
+		retval += " " + msg;
 	retval += " :" + error;
+	return retval;
+}
+
+std::string ACmd::createReplyMsg(const std::string &num, const std::string &nickname, const std::string &msg)
+{
+	std::string retval;
+
+	retval += SERVER_PREFIX + " " + num + " ";
+	retval += nickname + " ";
+	retval += ":" + msg;
 	return retval;
 }
 
@@ -101,4 +108,20 @@ ACmd &ACmd::operator=(const ACmd &other)
 {
 	(void) other;
 	return *this;
+}
+
+
+std::string ACmd::getStringParams()
+{
+	std::string retval;
+
+	for (std::vector<std::string>::iterator it = this->params.begin();
+			it != this->params.end();
+			++it)
+	{
+		if (it != this->params.begin())
+			retval += " ";
+		retval += *it;
+	}
+	return retval;
 }

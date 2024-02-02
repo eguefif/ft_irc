@@ -6,16 +6,18 @@ from settings import *
 
 
 test_command = [
-        ("NICK " + SEP, f"{PREFIX} 431 :No nickname given"),
-        ("NICK" + SEP, f"{PREFIX} 431 :No nickname given"),
+        ("NICK " + SEP, f"{PREFIX} 431 * :No nickname given"),
+        ("NICK" + SEP, f"{PREFIX} 431 * :No nickname given"),
         ("NICK 1234567890" + SEP, f"{PREFIX} 432 * 1234567890 :Erroneous nickname"),
+        ("NICK #yooo" + SEP, f"{PREFIX} 425 * #yooo :Invalid char detected"),
         ("NICK 123456789 0123" + SEP, f"{PREFIX} 432 * 123456789 0123 :Erroneous nickname"),
-        ("NICK :test test" + SEP, f"{PREFIX} 425 * test test :Invalid char detected"),
         ("NICK : test allo" + SEP, f"{PREFIX} 432 *  test allo :Erroneous nickname"),
-        ("USER " + SEP, f"{PREFIX} 461 * :Not enough parameters"),
+        ("NICK :test test" + SEP, f"{PREFIX} 425 * test test :Invalid char detected"),
+        ("USER " + SEP, f"{PREFIX} 461 * USER :Not enough parameters"),
+        ("NICK #yooo" + SEP, f"{PREFIX} 425 * #yooo :Invalid char detected"),
         ("USER yoo * 0 :fda fsa\t" + SEP, f"{PREFIX} 425 * yoo * 0 fda fsa\t :Invalid char detected"),
         ("USER yoo * 0 :fda fsa\037" + SEP, f"{PREFIX} 425 * yoo * 0 fda fsa\037 :Invalid char detected"),
-        ("USER yoo * 0 fds :fda fsa\037" + SEP, f"{PREFIX} 461 * yoo * 0 fds fda fsa :Not enough parameters"),
+        ("USER yoo * 0 fds :fda fsa\037" + SEP, f"{PREFIX} 461 * USER :Not enough parameters"),
         ]
 
 @pytest.mark.asyncio
@@ -44,7 +46,7 @@ async def test_errors_nick_not_authenticated(clean_log):
     await writer.wait_closed()
     if  type(retval) is not list:
         assert len(retval);
-        assert retval.strip() == f"{PREFIX} 451 * test :You have not registered"
+        assert retval.strip() == f"{PREFIX} 451 * :You have not registered"
     else:
         assert len(retval) != 2
 
@@ -58,13 +60,13 @@ async def test_errors_user_not_authenticated(clean_log):
     await writer.wait_closed()
     if  type(retval) is not list:
         assert len(retval)
-        assert retval.strip() == f"{PREFIX} 451 * test 0 * Cobby Brian :You have not registered"
+        assert retval.strip() == f"{PREFIX} 451 * :You have not registered"
     else:
         assert len(retval) != 2
 
 test_pass = [
-        ("PASS" + SEP, f"{PREFIX} 461 * :Not enough parameters"),
-        ("PASS fsdfsda" + SEP, f"{PREFIX} 464 * fsdfsda :Password incorrect"),
+        ("PASS" + SEP, f"{PREFIX} 461 * PASS :Not enough parameters"),
+        ("PASS fsdfsda" + SEP, f"{PREFIX} 464 * :Password incorrect"),
         ]
 
 @pytest.mark.asyncio
@@ -113,3 +115,27 @@ async def test_errors_user_already_registered(clean_log):
     await writer_to_close.wait_closed()
     assert len(retval[1]);
     assert retval[1] == f"{PREFIX} 462 test test * 0 Yoo Yoo :You may not reregister"
+
+test_command = [
+        ("JOIN" + SEP, f"{PREFIX} 461 test JOIN :Not enough parameters{SEP}"),
+        ("JOIN #test\018" + SEP, f"{PREFIX} 425 test #test\018 :Invalid char detected{SEP}"),
+        ]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("command, expect", test_command)
+async def test_errors_channel(clean_log, command, expect):
+    reader, writer_to_close = await log_user_test("test", "truc", "Truch muche")
+    cmd = f"JOIN #chantest{SEP}"
+    writer_to_close.write(command.encode())
+    await writer_to_close.drain()
+
+    try:
+        async with asyncio.timeout(0.1):
+            _ = await reader.readline()
+            retval = await reader.readline()
+    except TimeoutError:
+        retval = ""
+    writer_to_close.close()
+    await writer_to_close.wait_closed()
+    assert len(retval), "nothing return by server"
+    assert retval.decode() == expect

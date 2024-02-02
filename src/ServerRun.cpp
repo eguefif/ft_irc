@@ -104,6 +104,7 @@ void Server::removeClosedConnections()
 		{
 			if (this->pfds[j].fd == this->closedPfdsIndex[i])
 			{
+				this->removeClientFromChannels(this->clientList.find(this->pfds[j].fd)->second);
 				this->removeClient(this->pfds[j].fd);
 				close(this->pfds[j].fd);
 				this->pfds.erase(this->pfds.begin() + j);
@@ -113,6 +114,16 @@ void Server::removeClosedConnections()
 		}
 	}
 	this->closedPfdsIndex.clear();
+}
+
+void Server::removeClientFromChannels(Client *user)
+{
+	for (std::map<std::string, Channel *>::iterator it = channelList.begin();
+			it != channelList.end();
+			++it)
+	{
+		it->second->removeClient(user);
+	}
 }
 
 void Server::removeClient(const int &fd)
@@ -135,7 +146,7 @@ void Server::runCommands()
 			cmd = cmdFactory(msg, it->first, this->pass);
 			if (cmd)
 			{
-				cmd->execute(this->clientList);
+				cmd->execute(this->clientList, this->channelList);
 				delete cmd;
 			}
 		}
@@ -153,7 +164,7 @@ void Server::handlePollout()
 			{
 				write(pfds[i].fd, message.c_str(),
 							message.length() > MAX_MSG_SIZE - 2 ? MAX_MSG_SIZE - 2 : message.length());
-				write(pfds[i].fd, EOM.c_str(), 1);
+				write(pfds[i].fd, EOM.c_str(), 2);
 			}
 		}
 	}

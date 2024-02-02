@@ -8,6 +8,7 @@
 #include "defines.hpp"
 #include "stringUtils.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 
 class Client;
 
@@ -19,9 +20,9 @@ class ACmd
 		ACmd &operator=(const ACmd &other);
 		virtual ~ACmd() {};
 
-		virtual void execute(std::map<int, Client *> &clientList) = 0;
-		virtual std::string checkError(std::map<int, Client *> &clientList) = 0;
-	
+		virtual void execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList) = 0;
+ 	
 	protected:
 		const int fd;
 		std::string prefix;
@@ -32,7 +33,11 @@ class ACmd
 		const std::string &getClientAddr(std::map<int, Client *> &clientList) const;
 		bool isClientAuthenticated(std::map<int, Client *> &clientList) const;
 		bool isClientRegistered(std::map<int, Client *> &clientList) const;
-		std::string createErrorMsg(int num, std::string nickname, std::string error);
+		std::string createErrorMsg(std::string num, std::string nickname, std::string error);
+		std::string createReplyMsg(const std::string &num, const std::string &nickname, const std::string &msg);
+		virtual std::string checkError(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList) = 0;
+		std::string getStringParams();
 
 	private:
 		ACmd();

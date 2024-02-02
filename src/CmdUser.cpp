@@ -2,9 +2,10 @@
 
 CmdUser::CmdUser(const int &pFd, const std::string &pMessage): ACmd(pFd, pMessage) {}
 
-void CmdUser::execute(std::map<int, Client *> &clientList)
+void CmdUser::execute(std::map<int, Client *> &clientList,
+			std::map<std::string, Channel *> &channelList)
 {
-	std::string errorMsg = this->checkError(clientList);
+	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())
 		clientList.find(this->fd)->second->addMsg(errorMsg);
@@ -15,7 +16,10 @@ void CmdUser::execute(std::map<int, Client *> &clientList)
 				this->params[3]);
 		if (clientList.find(this->fd)->second->isRegistered())
 		{
-			clientList.find(this->fd)->second->addMsg("Welcome to IRC!");
+			std::string welcomeMsg = this->createReplyMsg(RPL_WELCOME,
+							this->getClientNick(clientList),
+						   	RPL_WELCOME_STR);
+			clientList.find(this->fd)->second->addMsg(welcomeMsg);
 			Log::out("new client registered: "
 					+ this->getClientNick(clientList)
 					+ " "
@@ -24,8 +28,10 @@ void CmdUser::execute(std::map<int, Client *> &clientList)
 	}
 }
 
-std::string CmdUser::checkError(std::map<int, Client *> &clientList)
+std::string CmdUser::checkError(std::map<int, Client *> &clientList,
+			std::map<std::string, Channel *> &channelList)
 {
+	(void) channelList;
 	if (!clientList.find(this->fd)->second->isAuthenticated())
 	{
 		return this->createErrorMsg(
@@ -37,21 +43,21 @@ std::string CmdUser::checkError(std::map<int, Client *> &clientList)
 	{
 		return this->createErrorMsg(
 			ERR_ALREADYREGISTRED,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + this->getStringParams(),
 			ERR_ALREADYREGISTRED_STR);
 	}
 	else if (this->params.size() != 4)
 	{
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + "USER",
 			ERR_NEEDMOREPARAMS_STR);
 	}
 	else if (!isPrint(this->params[0]) || !isPrint(this->params[3]))
 	{
 		return this->createErrorMsg(
 			ERR_INVALIDCHAR,
-			this->getClientNick(clientList),
+			this->getClientNick(clientList) + " " + this->getStringParams(),
 			ERR_INVALIDCHAR_STR);
 	}
 	return std::string();

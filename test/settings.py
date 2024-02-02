@@ -1,7 +1,7 @@
 import asyncio
 import time
 
-SEP = "\n"
+SEP = "\015\n"
 HOST = "127.0.0.1"
 PORT = 6667
 PREFIX = ":ft_irc"

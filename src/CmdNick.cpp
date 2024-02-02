@@ -4,9 +4,11 @@ CmdNick::CmdNick(const int &pFd, const std::string pMessage): ACmd(pFd, pMessage
 {
 }
 
-void CmdNick::execute(std::map<int, Client *> &clientList)
+void CmdNick::execute(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList)
 {
-	std::string errorMsg = this->checkError(clientList);
+	std::string errorMsg = this->checkError(clientList, channelList);
+
 	if (errorMsg.length())	
 		clientList.find(this->fd)->second->addMsg(errorMsg);
 	else
@@ -16,7 +18,9 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 			clientList.find(this->fd)->second->setNickname(this->getNewNickname());
 			if (clientList.find(this->fd)->second->isRegistered())
 				{
-					clientList.find(this->fd)->second->addMsg("Welcome to IRC!");
+					std::string welcomeMsg = this->createReplyMsg(RPL_WELCOME, this->getNewNickname(),
+						   	RPL_WELCOME_STR);
+					clientList.find(this->fd)->second->addMsg(welcomeMsg);
 					Log::out("client registered: "
 							+ this->getClientNick(clientList)
 							+ " "
@@ -24,12 +28,20 @@ void CmdNick::execute(std::map<int, Client *> &clientList)
 				}
 		}
 		else
+		{
 				clientList.find(this->fd)->second->setNickname(this->getNewNickname());
+				std::string confirmNickChg = this->createReplyMsg(RPL_WELCOME, this->getNewNickname(),
+						RPL_CONFIRM_NICK_CHANGE);
+				clientList.find(this->fd)->second->addMsg(confirmNickChg);
+		}
 	}
 }
 
-std::string CmdNick::checkError(std::map<int, Client *> &clientList)
+std::string CmdNick::checkError(std::map<int, Client *> &clientList,
+				std::map<std::string, Channel *> &channelList)
 {
+	(void) channelList;
+
 	if (!this->isClientAuthenticated(clientList))
 		return (this->createErrorMsg(
 				ERR_NOTREGISTERED,
@@ -37,23 +49,28 @@ std::string CmdNick::checkError(std::map<int, Client *> &clientList)
 				ERR_NOTREGISTERED_STR));
 	if (!this->params.size())
 		return (this->createErrorMsg(
-					ERR_NONICKNAMEGIVEN,
-					"",
-					ERR_NONICKNAMEGIVEN_STR));
+				ERR_NONICKNAMEGIVEN,
+				this->getClientNick(clientList),
+				ERR_NONICKNAMEGIVEN_STR));
 	if (this->params.size() > 1 || this->params[0].length() > 9)
 		return (this->createErrorMsg(
 				ERR_ERRONEUSNICKNAME,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList) + " " + getStringParams(),
 				ERR_ERRONEUSNICKNAME_STR));
 	if (!checkNickUnicity(clientList))
 		return (this->createErrorMsg(
 				ERR_NICKNAMEINUSE,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList)  + " " + this->getNewNickname(),
 				ERR_NICKNAMEINUSE_STR));
 	if (!isWord(this->getNewNickname()))
 		return this->createErrorMsg(
 				ERR_INVALIDCHAR,
-				this->getClientNick(clientList),
+				this->getClientNick(clientList) + " " + getStringParams(),
+				ERR_INVALIDCHAR_STR);
+	if (this->getNewNickname()[0] == '#' || this->getNewNickname()[0] == ':')
+		return this->createErrorMsg(
+				ERR_INVALIDCHAR,
+				this->getClientNick(clientList) + " " + getStringParams(),
 				ERR_INVALIDCHAR_STR);
 
 	return std::string();

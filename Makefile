@@ -1,11 +1,13 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror #-std=c++98 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -g #-std=c++98 -fsanitize=address 
 
-_INC = Log.hpp Server.hpp Client.hpp ACmd.hpp CmdNick.hpp CmdUser.hpp CmdPass.hpp stringUtils.hpp
+_INC = Log.hpp Server.hpp Client.hpp Channel.hpp ACmd.hpp CmdNick.hpp CmdUser.hpp \
+	   CmdPass.hpp CmdJoin.hpp stringUtils.hpp
 
-_SRC = main.cpp Server.cpp ServerRun.cpp Client.cpp Log.cpp ACmd.cpp CmdNick.cpp CmdUser.cpp CmdPass.cpp cmdFactory.cpp stringUtils.cpp
+_SRC = main.cpp Server.cpp ServerRun.cpp Client.cpp Channel.cpp Log.cpp ACmd.cpp \
+	   CmdNick.cpp CmdUser.cpp CmdPass.cpp CmdJoin.cpp cmdFactory.cpp stringUtils.cpp
 
 _OBJ = $(_SRC:.cpp=.o)
 SDIR = ./src/
@@ -23,7 +25,10 @@ $(NAME): $(OBJ) $(INC)
 $(ODIR)%.o: $(SDIR)%.cpp
 	$(CC) -c $< -o $@ -I$(IDIR) $(CFLAGS)
 
-.PHONY: fclean clean re all obj_dir
+run: all
+	./ircserv 6667 test
+
+.PHONY: fclean clean re all obj_dir run
 
 test: all
 	./test/make_test.sh
@@ -38,3 +43,4 @@ re: fclean all
 
 obj_dir:
 	@mkdir -p $(ODIR)
+
