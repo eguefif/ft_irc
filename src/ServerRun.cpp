@@ -139,9 +139,8 @@ void Server::removeClient(const int &fd)
 	std::string message;
 	while((message = this->clientList.find(fd)->second->getMsg()) != "")
 	{
-		std::cout << "Sending quit messge" << std::endl;
 		write(fd, message.c_str(),
-					message.length() > MAX_MSG_SIZE - 2 ? MAX_MSG_SIZE - 2 : message.length());
+				message.length() > MAX_MSG_SIZE - 2 ? MAX_MSG_SIZE - 2 : message.length());
 		write(fd, EOM.c_str(), 2);
 	}
 	delete this->clientList.find(fd)->second;
