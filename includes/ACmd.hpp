@@ -37,6 +37,7 @@ class ACmd
 		std::string createReplyMsg(const std::string &num, const std::string &nickname, const std::string &msg);
 		virtual std::string checkError(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList) = 0;
+		std::string getStringParams();
 
 	private:
 		ACmd();
