@@ -180,3 +180,17 @@ bool Channel::isAlreadyInChan(std::string user)
 	}
 	return false;
 }
+
+void Channel::removeInvited(Client *user)
+{
+	for (std::vector<Client *>::iterator it = this->invited.begin();
+			it != this->invited.end();
+			++it)
+	{
+		if (*it == user)
+		{
+			this->invited.erase(it);
+			break;
+		}
+	}
+}

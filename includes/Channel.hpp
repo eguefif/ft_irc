@@ -27,6 +27,7 @@ class Channel
 		void broadcast(std::string msg, Client *sender);
 		void greet(Client *newUser);
 		void removeClient(Client *user);
+		void removeInvited(Client *user);
 		bool isUserInChan(Client *user);
 		bool isUserOp(Client *user);
 		bool isAlreadyInChan(std::string user);
