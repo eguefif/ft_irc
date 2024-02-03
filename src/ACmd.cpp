@@ -66,7 +66,8 @@ std::string ACmd::createErrorMsg(std::string num, std::string msg, std::string e
 	retval += SERVER_PREFIX + " " + num;
 	if (msg.length())
 		retval += " " + msg;
-	retval += " :" + error;
+	if (error.length())
+		retval += " :" + error;
 	return retval;
 }
 

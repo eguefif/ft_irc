@@ -55,7 +55,7 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 				this->params.push_back(std::string());
 			}
 			std::string errorMsg = this->checkError(clientList, channelList);
-			if (errorMsg.length())	
+			if (errorMsg.length())
 				clientList.find(this->fd)->second->addMsg(errorMsg);
 			else
 			{
@@ -68,7 +68,12 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 					channelList.insert(std::make_pair(this->params[0], newChannel));
 				}
 				else
-					channelList.find(this->params[0])->second->addUser(currentClient);
+				{
+					Channel * chanToJoin = channelList.find(this->params[0])->second;
+					if (chanToJoin->isInvited(currentClient))
+						chanToJoin->removeInvited(currentClient);
+					chanToJoin->addUser(currentClient);
+				}
 				counter++;
 			}
 		}
@@ -78,7 +83,6 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-//Client *currentClient = clientList.find(this->fd)->second;
 	std::map<std::string, Channel *>::iterator it = channelList.find(this->params[0]);
 
 	if (!this->isClientRegistered(clientList))
@@ -99,17 +103,21 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 	if (it != channelList.end())
 	{
 		Channel *currentChannel = it->second;
-		if (currentChannel->getChannelMaxSize() != 0 && currentChannel->getUsersSize() >= currentChannel->getChannelMaxSize())
+		if (currentChannel->getChannelMaxSize() > 0 && currentChannel->getUsersSize() >= currentChannel->getChannelMaxSize())
 			return (this->createErrorMsg(
 						ERR_CHANNELISFULL,
 						this->getClientNick(clientList) + " " + this->params[0],
 						ERR_CHANNELISFULL_STR));
 		std::string channelPass = currentChannel->getChannelPassword();
-		if (channelPass.length() && this->params[1].length() && channelPass != this->params[1])
-			return (this->createErrorMsg(
+		if (channelPass.length() && (!this->params[1].length() || channelPass != this->params[1])) return (this->createErrorMsg(
 						ERR_PASSWDMISMATCH,
 						this->getClientNick(clientList),
 						ERR_PASSWDMISMATCH_STR));
+		if (currentChannel->isInviteOnly() && !currentChannel->isInvited(clientList.find(this->fd)->second))
+			return (this->createErrorMsg(
+						ERR_INVITEONLYCHAN,
+						this->getClientNick(clientList) + " " + currentChannel->getChannelName(),
+						ERR_INVITEONLYCHAN_STR));
 	}
 	return std::string();
 }

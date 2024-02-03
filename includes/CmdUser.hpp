@@ -1,8 +1,6 @@
 #pragma once
 
-#include "defines.hpp"
 #include "Client.hpp"
-#include <iostream>
 #include "ACmd.hpp"
 
 class Client;

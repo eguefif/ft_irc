@@ -83,8 +83,10 @@ std::string CmdMode::getBroadcastMsg()
 	std::vector<std::string>::iterator it = this->params.begin();
 	retval += "MODE " + *it + " ";
 	++it;
-	retval += *it + " :";
+	retval += *it;
 	++it;
+	if (it != this->params.end())
+		retval += " :";
 	for (; it != this->params.end(); ++it)
 	{
 		retval += *it;
@@ -96,13 +98,34 @@ std::string CmdMode::getBroadcastMsg()
 std::string CmdMode::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-	(void) channelList;
 	if (!this->params.size())
 	{
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
 			this->getClientNick(clientList) + " " + "PASS",
 			ERR_NEEDMOREPARAMS_STR);
+	}
+	else if (this->channel.length() && channelList.find(this->channel) == channelList.end())
+	{
+		return this->createErrorMsg(
+			ERR_NOSUCHCHANNEL,
+			this->getClientNick(clientList) + " " + "MODE",
+			ERR_NOSUCHCHANNEL_STR);
+	}
+	else if (!this->flags.size())
+	{
+		return this->createErrorMsg(
+			RPL_CHANNELMODEIS,
+			this->getClientNick(clientList) + " " + this->channel,
+			this->getChannelMode(channelList));
+	}
+	Channel *channel = channelList.find(this->channel)->second;
+	if (!channel->isUserOp(clientList.find(this->fd)->second))
+	{
+		return this->createErrorMsg(
+			ERR_CHANOPRIVSNEEDED,
+			this->getClientNick(clientList) + " " + this->channel,
+			ERR_CHANOPRIVSNEEDED_STR);
 	}
 	return std::string();
 }
@@ -138,6 +161,19 @@ std::string CmdMode::getNextArg()
 	{
 		retval = this->args.front();
 		this->args.pop();
+	}
+	return retval;
+}
+
+std::string CmdMode::getChannelMode(std::map<std::string, Channel *> channelList)
+{
+	std::map<std::string, Channel *>::iterator it = channelList.find(this->channel);
+	std::string retval;
+
+	if (it != channelList.end())
+	{
+		Channel *channel = it->second;
+		retval = channel->getModeString();
 	}
 	return retval;
 }

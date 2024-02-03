@@ -194,10 +194,9 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 	{
 		Client *newop = 0;
 		for (std::vector<Client *>::iterator it = this->users.begin();
-				it != this->users.end();
+				it != this->users.begin();
 				++it)
 		{
-			std::cout << ":comparing " << (*it)->getNickname() << " with " << oOperator;
 			if ((*it)->getNickname() == oOperator)
 			{
 				newop = *it;
@@ -224,6 +223,8 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 			}
 		}
 	}
+	for (auto it = this->operators.begin(); it != operators.end(); ++it)
+		std::cout << "operators: " << (*it)->getNickname() << std::endl;
 }
 
 void Channel::setLimit(bool toSet, std::string limit)

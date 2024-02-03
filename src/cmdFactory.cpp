@@ -4,6 +4,7 @@
 #include "CmdNick.hpp"
 #include "CmdUser.hpp"
 #include "CmdJoin.hpp"
+#include "CmdInvite.hpp"
 #include "CmdQuit.hpp"
 #include "CmdMode.hpp"
 
@@ -36,6 +37,8 @@ ACmd *cmdFactory(std::string msg, int senderFd, std::string password)
 		case 4:
 			return new CmdQuit(senderFd, msg);
 			break;
+		case 5:
+			return new CmdInvite(senderFd, msg);
 		case 6:
 			return new CmdMode(senderFd, msg);
 			break;
