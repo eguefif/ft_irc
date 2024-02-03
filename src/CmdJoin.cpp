@@ -68,7 +68,12 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 					channelList.insert(std::make_pair(this->params[0], newChannel));
 				}
 				else
-					channelList.find(this->params[0])->second->addUser(currentClient);
+				{
+					Channel * chanToJoin = channelList.find(this->params[0])->second;
+					if (chanToJoin->isInviteOnly() && chanToJoin->isInvited(currentClient))
+						chanToJoin->removeInvited(currentClient);
+					chanToJoin->addUser(currentClient);
+				}
 				counter++;
 			}
 		}
