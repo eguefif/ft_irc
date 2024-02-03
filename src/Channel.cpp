@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include <vector>
 
 Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), channelPass("")
 {
@@ -40,6 +41,11 @@ std::string Channel::getChannelPassword() const
 	return this->channelPass;
 }
 
+std::string Channel::getChannelName() const
+{
+	return this->name;
+}
+
 int Channel::getUsersSize() const
 {
 	return this->users.size();
@@ -51,6 +57,11 @@ void Channel::addUser(Client *newUser)
 	this->greet(newUser);
 	this->broadcast(this->newJoinMsg(newUser), newUser);
 	Log::out("user " + newUser->getNickname() + " joined channel " + this->name);
+}
+
+void Channel::addUserInvited(Client *newUserInvited)
+{
+	this->invited.push_back(newUserInvited);
 }
 
 void Channel::addOperator(Client *newOperator)
@@ -135,6 +146,50 @@ void Channel::removeClient(Client *user)
 		if (*it == user)
 		{
 			this->users.erase(it);
+			break;
+		}
+	}
+}
+
+bool Channel::isUserInChan(Client *user)
+{
+	for (std::vector<Client *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
+	{
+		if (*it == user)
+			return true;
+	}
+	return false;
+}
+
+bool Channel::isUserOp(Client *user)
+{
+	for (std::vector<Client *>::iterator it = this->operators.begin(); it != this->operators.end(); ++it)
+	{
+		if (*it == user)
+			return true;
+	}
+	return false;
+}
+
+bool Channel::isAlreadyInChan(std::string user)
+{
+	for (std::vector<Client *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
+	{
+		if ((*it)->getNickname() == user)
+			return true;
+	}
+	return false;
+}
+
+void Channel::removeInvited(Client *user)
+{
+	for (std::vector<Client *>::iterator it = this->invited.begin();
+			it != this->invited.end();
+			++it)
+	{
+		if (*it == user)
+		{
+			this->invited.erase(it);
 			break;
 		}
 	}

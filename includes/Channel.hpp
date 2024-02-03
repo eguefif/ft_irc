@@ -18,13 +18,19 @@ class Channel
 		bool isInvited(Client *client);
 		int getChannelMaxSize() const;
 		std::string getChannelPassword() const;
+		std::string getChannelName() const;
 		int getUsersSize() const;
 
 		void addUser(Client *newUser);
 		void addOperator(Client *newOperator);
+		void addUserInvited(Client *newUserInvited);
 		void broadcast(std::string msg, Client *sender);
 		void greet(Client *newUser);
 		void removeClient(Client *user);
+		void removeInvited(Client *user);
+		bool isUserInChan(Client *user);
+		bool isUserOp(Client *user);
+		bool isAlreadyInChan(std::string user);
 
 	private:
 		Channel();

@@ -55,7 +55,7 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 				this->params.push_back(std::string());
 			}
 			std::string errorMsg = this->checkError(clientList, channelList);
-			if (errorMsg.length())	
+			if (errorMsg.length())
 				clientList.find(this->fd)->second->addMsg(errorMsg);
 			else
 			{
@@ -68,7 +68,12 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 					channelList.insert(std::make_pair(this->params[0], newChannel));
 				}
 				else
-					channelList.find(this->params[0])->second->addUser(currentClient);
+				{
+					Channel * chanToJoin = channelList.find(this->params[0])->second;
+					if (chanToJoin->isInvited(currentClient))
+						chanToJoin->removeInvited(currentClient);
+					chanToJoin->addUser(currentClient);
+				}
 				counter++;
 			}
 		}
@@ -110,6 +115,11 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 						ERR_PASSWDMISMATCH,
 						this->getClientNick(clientList),
 						ERR_PASSWDMISMATCH_STR));
+		if (currentChannel->isInviteOnly() && !currentChannel->isInvited(clientList.find(this->fd)->second))
+			return (this->createErrorMsg(
+						ERR_INVITEONLYCHAN,
+						this->getClientNick(clientList) + " " + currentChannel->getChannelName(),
+						ERR_INVITEONLYCHAN_STR));
 	}
 	return std::string();
 }
