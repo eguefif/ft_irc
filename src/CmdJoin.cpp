@@ -70,7 +70,7 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 				else
 				{
 					Channel * chanToJoin = channelList.find(this->params[0])->second;
-					if (chanToJoin->isInviteOnly() && chanToJoin->isInvited(currentClient))
+					if (chanToJoin->isInvited(currentClient))
 						chanToJoin->removeInvited(currentClient);
 					chanToJoin->addUser(currentClient);
 				}
