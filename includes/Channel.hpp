@@ -19,6 +19,8 @@ class Channel
 		int getChannelMaxSize() const;
 		std::string getChannelPassword() const;
 		std::string getChannelName() const;
+		std::string getTopic() const;
+		void setTopic(const std::string &pTopic);
 		int getUsersSize() const;
 
 		void setInviteOnly(bool toSet);
@@ -48,7 +50,7 @@ class Channel
 		Channel(const Channel &other);
 
 		const std::string name;
-//		std::string &topic;
+		std::string topic;
 		std::vector<Client *> users;
 		std::vector<Client *> operators;
 		std::vector<Client *> invited;

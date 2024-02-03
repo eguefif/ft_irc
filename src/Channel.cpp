@@ -46,6 +46,16 @@ std::string Channel::getChannelName() const
 	return this->name;
 }
 
+std::string Channel::getTopic() const
+{
+	return this->topic;
+}
+
+void Channel::setTopic(const std::string &pTopic)
+{
+	this->topic = pTopic;
+}
+
 int Channel::getUsersSize() const
 {
 	return this->users.size();
@@ -94,7 +104,6 @@ void Channel::broadcast(std::string msg)
 			++it)
 		(*it)->addMsg(msg);
 }
-
 
 std::string	Channel::newJoinMsg(Client *newUser)
 {

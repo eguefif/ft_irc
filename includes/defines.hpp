@@ -34,6 +34,7 @@
 
 #define RPL_CHANNELMODEIS std::string("324")
 #define RPL_NOTOPIC std::string("331")
+#define RPL_NOTOPIC_STR std::string("No topic is set")
 #define RPL_TOPIC std::string("332")
 #define RPL_INVITING std::string("341")
 #define RPL_SUMMONING std::string("342")
