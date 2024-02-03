@@ -21,16 +21,26 @@ class Channel
 		std::string getChannelName() const;
 		int getUsersSize() const;
 
+		void setInviteOnly(bool toSet);
+		void setTopicOp(bool toSet);
+		void setPassword(bool toSet, std::string password);
+		void setOperators(bool toSet, std::string operators);
+		void setLimit(bool toSet, std::string limit);
+
 		void addUser(Client *newUser);
 		void addOperator(Client *newOperator);
 		void addUserInvited(Client *newUserInvited);
 		void broadcast(std::string msg, Client *sender);
+		void broadcast(std::string msg);
 		void greet(Client *newUser);
 		void removeClient(Client *user);
 		void removeInvited(Client *user);
 		bool isUserInChan(Client *user);
+		bool isUserInChan(std::string user);
 		bool isUserOp(Client *user);
-		bool isAlreadyInChan(std::string user);
+		std::string getModeString();
+
+		void broadCastFlags();
 
 	private:
 		Channel();
@@ -46,6 +56,7 @@ class Channel
 		bool inviteOnly;
 		bool channelTopicOp;
 		int channelMaxSize;
+		bool passwordActivated;
 		std::string channelPass;
 
 		std::string	newJoinMsg(Client *newUser);

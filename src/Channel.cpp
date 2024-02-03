@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 #include <vector>
 
-Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), channelPass("")
+Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), passwordActivated(false), channelPass("")
 {
 	Log::out("new channel " + this->name + " created");
 }
@@ -87,6 +87,15 @@ void Channel::broadcast(std::string msg, Client *sender)
 	}
 }
 
+void Channel::broadcast(std::string msg)
+{
+	for (std::vector<Client *>::iterator it = this->users.begin();
+			it != this->users.end();
+			++it)
+		(*it)->addMsg(msg);
+}
+
+
 std::string	Channel::newJoinMsg(Client *newUser)
 {
 	return (":" + newUser->getNickname() + " JOIN :" + this->name);
@@ -151,6 +160,88 @@ void Channel::removeClient(Client *user)
 	}
 }
 
+void Channel::setInviteOnly(bool toSet)
+{
+	this->inviteOnly = toSet;
+}
+
+void Channel::setTopicOp(bool toSet)
+{
+	this->channelTopicOp = toSet;
+}
+
+void Channel::setPassword(bool toSet, std::string pPassword)
+{
+	if (!toSet && this->passwordActivated && this->channelPass == pPassword)
+		this->passwordActivated = toSet;
+	if (!this->passwordActivated && toSet)
+	{
+		if (pPassword.length())
+		{
+			this->passwordActivated = toSet;
+			this->channelPass = pPassword;
+		}
+	}
+}
+
+void Channel::setOperators(bool toSet, std::string oOperator)
+{
+	if (toSet && this->isUserInChan(oOperator))
+	{
+		Client *newop = 0;
+		for (std::vector<Client *>::iterator it = this->users.begin();
+				it != this->users.end();
+				++it)
+		{
+			if ((*it)->getNickname() == oOperator)
+			{
+				newop = *it;
+				break;
+			}
+		}
+		if (newop)
+		{
+			this->operators.push_back(newop);
+			Log::out("channel " + this->name + " operator: " + oOperator);
+		}
+	}
+	else
+	{
+		for (std::vector<Client *>::iterator it = this->operators.begin();
+				it != this->operators.begin();
+				++it)
+		{
+			if ((*it)->getNickname() == oOperator)
+			{
+				this->operators.erase(it);
+				Log::out("channel " + this->name + " operator removed: " + oOperator);
+				break;
+			}
+		}
+	}
+}
+
+void Channel::setLimit(bool toSet, std::string limit)
+{
+	if (toSet == false)
+		this->channelMaxSize = 0;
+	else
+	{
+		if (limit.length())
+		{
+			try
+			{
+				this->channelMaxSize = std::stoi(limit);
+				Log::out("channel " + this->name + " limit set to " + limit);
+			}
+			catch(std::exception &e)
+			{
+				Log::err("MODE +l limit: " + limit, &e);
+			}
+		}
+	}
+}
+
 bool Channel::isUserInChan(Client *user)
 {
 	for (std::vector<Client *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
@@ -171,7 +262,7 @@ bool Channel::isUserOp(Client *user)
 	return false;
 }
 
-bool Channel::isAlreadyInChan(std::string user)
+bool Channel::isUserInChan(std::string user)
 {
 	for (std::vector<Client *>::iterator it = this->users.begin(); it != this->users.end(); ++it)
 	{
@@ -193,4 +284,20 @@ void Channel::removeInvited(Client *user)
 			break;
 		}
 	}
+}
+
+std::string Channel::getModeString()
+{
+	std::string retval;
+
+	retval += "+";
+	if (this->inviteOnly)
+		retval += "i";
+	if (this->channelTopicOp)
+		retval += "t";
+	if (this->channelMaxSize)
+		retval += "l";
+	if (this->passwordActivated)
+		retval += "k";
+	return retval;
 }
