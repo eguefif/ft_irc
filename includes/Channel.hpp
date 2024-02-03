@@ -65,5 +65,7 @@ class Channel
 		std::string getUserNames(Client *newUser);
 		std::string endOfNames(Client *user);
 		bool isOperator(Client *user);
+
+		std::string getTopicMsg(std::string nickname);
 };
 

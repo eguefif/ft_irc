@@ -1,7 +1,7 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = #-Wall -Wextra -Werror -g #-std=c++98
+CFLAGS = #-Wall -Wextra -Werror -g -std=c++98
 
 _INC = Log.hpp Server.hpp Client.hpp Channel.hpp ACmd.hpp CmdNick.hpp CmdUser.hpp \
 	   CmdPass.hpp CmdJoin.hpp CmdInvite.hpp CmdQuit.hpp stringUtils.hpp CmdMode.hpp CmdTopic.hpp

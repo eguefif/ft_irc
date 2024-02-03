@@ -42,7 +42,7 @@ void CmdTopic::execute(std::map<int, Client *> &clientList, std::map<std::string
 					newTopic += *it + " ";
 			}
 			currentChannel->setTopic(newTopic);
-			newTopicReply += "TOPIC " + this->params[0] + " " + ":" + newTopic;
+			newTopicReply += ":" + this->getClientNick(clientList) + " TOPIC " + this->params[0] + " " + ":" + newTopic;
 			currentChannel->broadcast(newTopicReply);
 		}
 	}
