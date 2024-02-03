@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 #include <vector>
 
-Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(true), channelTopicOp(true), channelMaxSize(0), channelPass("")
+Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), channelPass("")
 {
 	Log::out("new channel " + this->name + " created");
 }
