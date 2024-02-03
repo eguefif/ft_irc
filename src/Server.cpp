@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+bool isRunning = true;
+
 Server::Server(const std::string &pPort, const std::string &pPass)
 {
 	this->pass = pPass;
@@ -7,6 +9,7 @@ Server::Server(const std::string &pPort, const std::string &pPass)
 	this->numSockets = 0;
 	this->initServerSocket();
 	this->initPoll();
+	this->initSignal();
 }
 
 void Server::setPort(const std::string &pPort)
@@ -106,12 +109,20 @@ void Server::initPoll()
 	this->pfds.push_back(p);
 }
 
+void Server::initSignal()
+{
+	signal(SIGINT, handleSignal);
+	signal(SIGQUIT, handleSignal);
+	signal(SIGTERM, handleSignal);
+
+}
+
 Server::~Server()
 {
 	for (nfds_t i = 0; i < this->numSockets; ++i)
 		close(this->pfds[i].fd);
 }
-void Server::freeMemory()
+void Server::exitGracefully()
 {
 	for (std::map<int, Client *>::iterator it = this->clientList.begin();
 			it != this->clientList.end();
@@ -121,4 +132,20 @@ void Server::freeMemory()
 			it != this->channelList.end();
 			++it)
 		delete it->second;
+	for (std::vector<pollfd>::iterator it = this->pfds.begin();
+			it != this->pfds.end();
+			++it)
+	{
+		std::string msg = "ERROR: Quit: server is shutingdown";
+		int fd = it->fd;
+		write(fd, msg.c_str(), msg.length());
+		write(fd, "\015\n", 2);
+		close(fd);
+	}
+}
+
+void handleSignal(int sig)
+{
+	(void) sig;
+	isRunning = false;
 }

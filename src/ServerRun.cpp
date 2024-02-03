@@ -2,7 +2,7 @@
 
 void Server::run()
 {
-	while (true)
+	while (isRunning)
 	{
 		this->runPoll();
 		this->handleNewconnection();
@@ -12,10 +12,21 @@ void Server::run()
 		this->handlePollout();
 	}
 	close(this->serverSocket);
+	this->exitGracefully();
 }
 
 void Server::runPoll()
 {
+	sigset_t sigset;
+	struct sigaction sa;
+
+	sigemptyset(&sigset)
+		sa.sa_handler = &handle_signal;
+	sa.sa_mask = sigset;
+	sa.sa_flags = 0;
+	sigaction(SIGTERM, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGINT, &sa, NULL);
 	if (poll(this->pfds.data(), this->numSockets, -1) < 0)
 	{
 		Log::err("poll failure", 0);
