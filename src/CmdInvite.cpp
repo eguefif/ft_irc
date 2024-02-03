@@ -84,7 +84,7 @@ bool CmdInvite::checkUserIsOp(Client *user, std::string channelName, std::map<st
 bool CmdInvite::isAlreadyInChan(std::string user, std::string channelName, std::map<std::string, Channel *> &channelList)
 {
 	Channel *channel = channelList.find(channelName)->second;
-	return channel->isAlreadyInChan(user);
+	return channel->isUserInChan(user);
 }
 
 Client * CmdInvite::getClientFromName(std::string name, std::map<int, Client *> &clientList)

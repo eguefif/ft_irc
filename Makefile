@@ -1,14 +1,14 @@
 NAME=ircserv
 
 CC=c++
-CFLAGS = -Wall -Wextra -Werror -g #-std=c++98 -fsanitize=address 
+CFLAGS = #-Wall -Wextra -Werror -g #-std=c++98
 
 _INC = Log.hpp Server.hpp Client.hpp Channel.hpp ACmd.hpp CmdNick.hpp CmdUser.hpp \
-	   CmdPass.hpp CmdJoin.hpp CmdInvite.hpp CmdQuit.hpp stringUtils.hpp CmdTopic.hpp
+	   CmdPass.hpp CmdJoin.hpp CmdInvite.hpp CmdQuit.hpp stringUtils.hpp CmdMode.hpp CmdTopic.hpp
 
 _SRC = main.cpp Server.cpp ServerRun.cpp Client.cpp Channel.cpp Log.cpp ACmd.cpp \
-	   CmdNick.cpp CmdUser.cpp CmdPass.cpp CmdJoin.cpp CmdInvite.cpp cmdFactory.cpp \
-	   stringUtils.cpp CmdQuit.cpp CmdTopic.cpp
+	   CmdNick.cpp CmdUser.cpp CmdPass.cpp CmdJoin.cpp cmdFactory.cpp stringUtils.cpp \
+	   CmdQuit.cpp CmdMode.cpp CmdInvite.cpp CmdTopic.cpp
 
 _OBJ = $(_SRC:.cpp=.o)
 SDIR = ./src/
