@@ -4,6 +4,7 @@
 #include "Client.hpp"
 #include <iostream>
 #include "ACmd.hpp"
+#include <queue>
 
 class Client;
 
@@ -23,10 +24,12 @@ class CmdMode: public ACmd
 		std::string checkError(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
 
-		void addManyFlags(std::string str);
-		void handleFlag(std::string str, std::map<std::string, Channel *> channelList);
+		void addFlags(std::string str);
+		void handleFlag(std::string str, Channel *currentChannel);
+		std::string getNextArg();
+		std::string getBroadcastMsg();
 		
 		std::string channel;
 		std::vector<std::string> flags;
-		std::vector<std::string> args;
+		std::queue<std::string> args;
 };

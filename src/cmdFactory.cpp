@@ -5,8 +5,9 @@
 #include "CmdUser.hpp"
 #include "CmdJoin.hpp"
 #include "CmdQuit.hpp"
+#include "CmdMode.hpp"
 
-# define CMD_LIST_NUMBER 5
+# define CMD_LIST_NUMBER 7
 
 int getIndex(const std::string &cmd);
 
@@ -35,6 +36,9 @@ ACmd *cmdFactory(std::string msg, int senderFd, std::string password)
 		case 4:
 			return new CmdQuit(senderFd, msg);
 			break;
+		case 6:
+			return new CmdMode(senderFd, msg);
+			break;
 	}
 	return 0;
 	
@@ -42,7 +46,8 @@ ACmd *cmdFactory(std::string msg, int senderFd, std::string password)
 
 int getIndex(const std::string &cmd)
 {
-	std::string commandList[] = {"NICK", "USER", "PASS", "JOIN", "QUIT"};
+	std::string commandList[] = {"NICK", "USER", "PASS", "JOIN", "QUIT", "INVITE",
+	"MODE"};
 
 	for (int i = 0; i < CMD_LIST_NUMBER; ++i)
 		if (commandList[i] == cmd)

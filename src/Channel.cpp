@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), channelPass("")
+Channel::Channel(std::vector<std::string> &params): name(params[0]), inviteOnly(false), channelTopicOp(true), channelMaxSize(0), passwordActivated(false), channelPass("")
 {
 	Log::out("new channel " + this->name + " created");
 }
@@ -76,6 +76,15 @@ void Channel::broadcast(std::string msg, Client *sender)
 	}
 }
 
+void Channel::broadcast(std::string msg)
+{
+	for (std::vector<Client *>::iterator it = this->users.begin();
+			it != this->users.end();
+			++it)
+		(*it)->addMsg(msg);
+}
+
+
 std::string	Channel::newJoinMsg(Client *newUser)
 {
 	return (":" + newUser->getNickname() + " JOIN :" + this->name);
@@ -140,20 +149,79 @@ void Channel::removeClient(Client *user)
 	}
 }
 
-void Channel::setFlags(std::string flag)
+void Channel::setInviteOnly(bool toSet)
 {
-	bool toSet;
+	this->inviteOnly = toSet;
+}
 
-	if (flag[0])
-		toSet = true;
-	else
-		toSet = false;
+void Channel::setTopicOp(bool toSet)
+{
+	this->channelTopicOp = toSet;
+}
 
-	switch (flag[1])
+void Channel::setPassword(bool toSet, std::string pPassword)
+{
+	if (this->passwordActivated && this->channelPass == pPassword)
 	{
-		case 'i': this->inviteOnly = toSet;
-				  break;
-		case 't': this->channelTopicOp = toSet;
-				  break;
+		this->passwordActivated = toSet;
+		if (pPassword.length())
+			this->channelPass = pPassword;
 	}
+	if (!this->passwordActivated && toSet)
+	{
+		if (pPassword.length())
+		{
+			this->passwordActivated = toSet;
+			this->channelPass = pPassword;
+		}
+	}
+}
+
+void Channel::setOperators(bool toSet, std::string oOperators)
+{
+	(void) toSet;
+	(void) oOperators;
+}
+
+void Channel::setLimit(bool toSet, std::string limit)
+{
+	if (toSet == false)
+		this->channelMaxSize = 0;
+	else
+	{
+		if (limit.length())
+		{
+			try
+			{
+				this->channelMaxSize = std::stoi(limit);
+			}
+			catch(std::exception &e)
+			{
+				Log::err("MODE +l limit: " + limit, &e);
+			}
+		}
+	}
+}
+
+void Channel::broadCastFlags()
+{
+	std::string msg = "MODE " + this->name + " :";
+	std::string endMsg = "[";
+
+	if (this->inviteOnly)
+		msg += "i";
+	if (this->channelTopicOp)
+		msg += "t";
+	if (this->channelMaxSize)
+	{
+		msg += "l";
+		endMsg += std::to_string(this->channelMaxSize);
+	}
+	if (this->passwordActivated)
+	{
+		msg += "k";
+		endMsg += this->channelPass;
+	}
+	msg += + " " + endMsg + "]";
+	this->broadcast(msg);
 }
