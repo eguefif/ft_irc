@@ -39,7 +39,7 @@ void CmdMode::addFlags(std::string str)
 		}
 		else
 		{
-			if (MODE_LETTERS.find(*it) != std::string::npos)
+			if (std::string(MODE_LETTERS).find(*it) != std::string::npos)
 			{
 				std::string letter = "";
 				letter += *it;

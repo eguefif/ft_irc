@@ -172,12 +172,8 @@ void Channel::setTopicOp(bool toSet)
 
 void Channel::setPassword(bool toSet, std::string pPassword)
 {
-	if (this->passwordActivated && this->channelPass == pPassword)
-	{
+	if (!toSet && this->passwordActivated && this->channelPass == pPassword)
 		this->passwordActivated = toSet;
-		if (pPassword.length())
-			this->channelPass = pPassword;
-	}
 	if (!this->passwordActivated && toSet)
 	{
 		if (pPassword.length())
@@ -197,7 +193,6 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 				it != this->users.end();
 				++it)
 		{
-			std::cout << ":comparing " << (*it)->getNickname() << " with " << oOperator;
 			if ((*it)->getNickname() == oOperator)
 			{
 				newop = *it;
