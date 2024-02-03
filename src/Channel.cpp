@@ -82,8 +82,20 @@ void Channel::addOperator(Client *newOperator)
 void Channel::greet(Client *newUser)
 {
 	newUser->addMsg(this->newJoinMsg(newUser));
+	if (this->topic.length())
+		newUser->addMsg(this->getTopicMsg(newUser->getNickname()));
 	newUser->addMsg(this->getUserNames(newUser));
 	newUser->addMsg(this->endOfNames(newUser));
+}
+
+std::string Channel::getTopicMsg(std::string nickname)
+{
+	std::string retval;
+	retval +=	RPL_TOPIC;
+	retval += " " + nickname;
+	retval += " " + this->name;
+	retval += " :" + this->topic;
+	return retval;
 }
 
 void Channel::broadcast(std::string msg, Client *sender)
@@ -217,7 +229,7 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 	else
 	{
 		for (std::vector<Client *>::iterator it = this->operators.begin();
-				it != this->operators.begin();
+				it != this->operators.end();
 				++it)
 		{
 			if ((*it)->getNickname() == oOperator)
