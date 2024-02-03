@@ -20,6 +20,7 @@ class Channel
 		std::string getChannelPassword() const;
 		int getUsersSize() const;
 
+		void setFlags(std::string flag);
 		void addUser(Client *newUser);
 		void addOperator(Client *newOperator);
 		void broadcast(std::string msg, Client *sender);

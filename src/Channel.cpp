@@ -139,3 +139,21 @@ void Channel::removeClient(Client *user)
 		}
 	}
 }
+
+void Channel::setFlags(std::string flag)
+{
+	bool toSet;
+
+	if (flag[0])
+		toSet = true;
+	else
+		toSet = false;
+
+	switch (flag[1])
+	{
+		case 'i': this->inviteOnly = toSet;
+				  break;
+		case 't': this->channelTopicOp = toSet;
+				  break;
+	}
+}

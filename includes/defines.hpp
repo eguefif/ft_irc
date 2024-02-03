@@ -5,6 +5,7 @@
 #define MAX_MSG_SIZE 512
 #define HOST "0.0.0.0"
 #define SERV_MAX_CLIENTS 100
+#define MODE_LETTERS std::string("itkol")
 
 #define RPL_WELCOME std::string("001")
 #define RPL_WELCOME_STR std::string("Welcome to our IRC")

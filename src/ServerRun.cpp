@@ -65,6 +65,7 @@ void Server::listenPauline()
 		if (this->pfds[i].revents & POLLIN)
 		{
 			cmdTmp = this->readSocket(this->pfds[i].fd);
+			std::cout << "COMMAND: " << cmdTmp << std::endl;
 			if (cmdTmp.length())
 				this->clientList.find(this->pfds[i].fd)->second->updateMsg(cmdTmp);
 		}
