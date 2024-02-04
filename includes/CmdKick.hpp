@@ -1,31 +1,29 @@
 #pragma once
 
-#include "defines.hpp"
 #include "Client.hpp"
-#include <iostream>
 #include "ACmd.hpp"
 
 class Client;
 
-class CmdNick : public ACmd
+class CmdKick: public ACmd
 {
 	public:
-		~CmdNick() {};
-		CmdNick(const int &pFd, const std::string pMessage);
+		~CmdKick() {};
+		CmdKick(const int &pFd, const std::string &pMessage);
 
 		void execute(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
 	
 	private:
-		CmdNick();
-		CmdNick(const CmdNick &other);
-		CmdNick &operator=(const CmdNick &other);
-		bool checkNickUnicity(std::map<int, Client *> &clientList);
+		CmdKick();
+		CmdKick(const CmdKick &other);
+		CmdKick &operator=(const CmdKick &other);
+
 		std::string checkError(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
-
-		const std::string getNewNickname();
-
+		std::string createKickMsg(std::map<int, Client *> &clientList);
+		std::string getReason();
 		bool checkUserInChan(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList);
+		bool checkUserInChan(std::string user, std::string channelName, std::map<std::string, Channel *> &channelList);
 		bool checkUserIsOp(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList);
 };
