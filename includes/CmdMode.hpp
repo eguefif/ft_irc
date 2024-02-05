@@ -28,7 +28,7 @@ class CmdMode: public ACmd
 		std::string replyParams;
 
 		void addFlags(std::string str);
-		std::string handleFlag(std::string str, Channel *currentChannel);
+		std::string handleFlag(std::string str, Channel *currentChannel, std::map<int, Client *> clientList);
 		std::string getNextArg();
 		std::string getBroadcastMsg(std::string nickname);
 		std::string getChannelMode(std::map<std::string, Channel *> channelList);
