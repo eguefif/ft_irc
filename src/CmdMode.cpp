@@ -58,7 +58,7 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 	std::string errorMsg = this->checkError(clientList, channelList);
 
 	if (errorMsg.length())
-		clientList.find(this->fd)->second->addMsgNonRegistered(errorMsg);
+		clientList.find(this->fd)->second->addMsg(errorMsg);
 	else 
 	{
 		std::map<std::string, Channel *>::iterator itChannel = channelList.find(this->channel);
@@ -69,7 +69,15 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 				it != this->flags.end();
 				++it)
 		{
-			this->handleFlag(*it, currentChannel);
+			std::string wrongNickname = this->handleFlag(*it, currentChannel);
+			if (wrongNickname.length())
+			{
+				std::string msg = this->createErrorMsg(
+						ERR_WASNOSUCHNICK,
+						this->getClientNick(clientList) + " " + wrongNickname,
+						ERR_WASNOSUCHNICK_STR);
+				clientList.find(this->fd)->second->addMsg(msg);
+			}
 		}
 		std::string msg = this->getBroadcastMsg(this->getClientNick(clientList));
 		currentChannel->broadcast(msg);
@@ -130,9 +138,11 @@ std::string CmdMode::checkError(std::map<int, Client *> &clientList,
 	return std::string();
 }
 
-void CmdMode::handleFlag(std::string str, Channel *currentChannel)
+std::string CmdMode::handleFlag(std::string str, Channel *currentChannel)
 {
 	bool toSet;
+	std::string retval;
+	std::string nick;
 
 	if (str[0] == '+')
 		toSet = true;
@@ -146,11 +156,14 @@ void CmdMode::handleFlag(std::string str, Channel *currentChannel)
 				  break;
 		case 'k': currentChannel->setPassword(toSet, this->getNextArg());
 				  break;
-		case 'o': currentChannel->setOperators(toSet, this->getNextArg());
+		case 'o': nick = this->getNextArg();
+				  if (!currentChannel->setOperators(toSet, nick))
+				  	retval = nick;
 				  break;
 		case 'l': currentChannel->setLimit(toSet, this->getNextArg());
 				  break;
 	}
+	return retval;
 }
 
 std::string CmdMode::getNextArg()

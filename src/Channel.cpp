@@ -231,7 +231,7 @@ void Channel::setPassword(bool toSet, std::string pPassword)
 	}
 }
 
-void Channel::setOperators(bool toSet, std::string oOperator)
+bool Channel::setOperators(bool toSet, std::string oOperator)
 {
 	if (toSet && this->isUserInChan(oOperator))
 	{
@@ -251,9 +251,13 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 			this->operators.push_back(newop);
 			Log::out("channel " + this->name + " operator: " + oOperator);
 		}
+		else
+			return false;
 	}
 	else
 	{
+		bool flag = false;
+
 		for (std::vector<Client *>::iterator it = this->operators.begin();
 				it != this->operators.end();
 				++it)
@@ -262,10 +266,14 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 			{
 				this->operators.erase(it);
 				Log::out("channel " + this->name + " operator removed: " + oOperator);
+				flag = true;
 				break;
 			}
 		}
+		if (!flag)
+			return false;
 	}
+	return true;
 }
 
 void Channel::setLimit(bool toSet, std::string limit)
