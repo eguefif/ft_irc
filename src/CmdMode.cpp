@@ -73,7 +73,7 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 		}
 		else
 		{
-			this->replyMsg = std::string(":") + this->getClientNick(clientList) + " " + "MODE ";
+			this->replyMsg = std::string(":") + this->getClientNick(clientList) + " " + "MODE " + this->channel + " ";
 			this->replyParams = " :";
 
 			for (std::vector<std::string>::iterator it = this->flags.begin();
@@ -174,7 +174,7 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel, std::m
 				  this->replyMsg += " " + str;
 				  break;
 		case 't': currentChannel->setTopicOp(toSet);
-				  this->replyMsg += " " + str;
+				  this->replyMsg += str;
 				  break;
 		case 'k': pass = this->getNextArg();
 				  if (!pass.length()) 
@@ -183,7 +183,7 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel, std::m
 							this->getClientNick(clientList) + " " + this->channel + " k *",
 							"You must specify a parameter for the key mode. Syntax: <key> ." );
 				  currentChannel->setPassword(toSet, pass);
-				  this->replyMsg += " " + str;
+				  this->replyMsg += str;
 				  this->replyParams += pass + " ";
 				  break;
 		case 'o': nick = this->getNextArg();
@@ -199,7 +199,7 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel, std::m
 							ERR_NOSUCHNICK_STR);
 				  else
 				  {
-				  	this->replyMsg += " " + str;
+				  	this->replyMsg += str;
 					this->replyParams += nick + " ";
 				  }
 				  break;
