@@ -62,7 +62,7 @@ std::string CmdNick::checkError(std::map<int, Client *> &clientList,
 				ERR_NICKNAMEINUSE,
 				this->getClientNick(clientList)  + " " + this->getNewNickname(),
 				ERR_NICKNAMEINUSE_STR));
-	if (!isWord(this->getNewNickname()))
+	if (!isWord(this->getNewNickname()) ||( this->getNewNickname()[0] > '0' && this->getNewNickname()[0] < '9'))
 		return this->createErrorMsg(
 				ERR_INVALIDCHAR,
 				this->getClientNick(clientList) + " " + getStringParams(),

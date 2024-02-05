@@ -5,6 +5,7 @@
 #define MAX_MSG_SIZE 512
 #define HOST "0.0.0.0"
 #define SERV_MAX_CLIENTS 100
+#define MODE_LETTERS "itkol"
 
 #define RPL_WELCOME std::string("001")
 #define RPL_WELCOME_STR std::string("Welcome to our IRC")
@@ -33,6 +34,7 @@
 
 #define RPL_CHANNELMODEIS std::string("324")
 #define RPL_NOTOPIC std::string("331")
+#define RPL_NOTOPIC_STR std::string("No topic is set")
 #define RPL_TOPIC std::string("332")
 #define RPL_INVITING std::string("341")
 #define RPL_SUMMONING std::string("342")
@@ -87,6 +89,7 @@
 #define ERR_NICKCOLLISION std::string("436")
 
 #define ERR_USERNOTINCHANNEL std::string("441")
+#define ERR_USERNOTINCHANNEL_STR std::string("They aren't on that channel")
 #define ERR_NOTONCHANNEL std::string("442")
 #define ERR_NOTONCHANNEL_STR std::string("You're not on that channel")
 #define ERR_USERONCHANNEL std::string("443")

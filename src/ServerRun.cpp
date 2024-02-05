@@ -10,6 +10,7 @@ void Server::run()
 		this->runCommands();
 		this->removeClosedConnections();
 		this->handlePollout();
+		this->removeEmptyChannels();
 	}
 	close(this->serverSocket);
 }
@@ -182,5 +183,25 @@ void Server::handlePollout()
 				write(pfds[i].fd, EOM.c_str(), 2);
 			}
 		}
+	}
+}
+
+void Server::removeEmptyChannels()
+{
+	std::vector<std::map<std::string, Channel *>::iterator> channelToRemove;
+
+	for (std::map<std::string, Channel *>::iterator it = this->channelList.begin();
+			it != this->channelList.end(); ++it)
+	{
+		if (it->second->getUsersSize() == 0)
+		{
+			delete it->second;
+			channelToRemove.push_back(it);
+		}
+	}
+	for (std::vector<std::map<std::string, Channel *>::iterator>::iterator it = channelToRemove.begin();
+			it != channelToRemove.end(); ++it)
+	{
+		this->channelList.erase(*it);
 	}
 }

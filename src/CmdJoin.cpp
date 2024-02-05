@@ -83,7 +83,6 @@ void CmdJoin::execute(std::map<int, Client *> &clientList,
 std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
-//Client *currentClient = clientList.find(this->fd)->second;
 	std::map<std::string, Channel *>::iterator it = channelList.find(this->params[0]);
 
 	if (!this->isClientRegistered(clientList))
@@ -104,14 +103,13 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 	if (it != channelList.end())
 	{
 		Channel *currentChannel = it->second;
-		if (currentChannel->getChannelMaxSize() != 0 && currentChannel->getUsersSize() >= currentChannel->getChannelMaxSize())
+		if (currentChannel->getChannelMaxSize() > 0 && currentChannel->getUsersSize() >= currentChannel->getChannelMaxSize())
 			return (this->createErrorMsg(
 						ERR_CHANNELISFULL,
 						this->getClientNick(clientList) + " " + this->params[0],
 						ERR_CHANNELISFULL_STR));
 		std::string channelPass = currentChannel->getChannelPassword();
-		if (channelPass.length() && this->params[1].length() && channelPass != this->params[1])
-			return (this->createErrorMsg(
+		if (channelPass.length() && (!this->params[1].length() || channelPass != this->params[1])) return (this->createErrorMsg(
 						ERR_PASSWDMISMATCH,
 						this->getClientNick(clientList),
 						ERR_PASSWDMISMATCH_STR));
