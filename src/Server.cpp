@@ -136,7 +136,7 @@ void Server::exitGracefully()
 			it != this->pfds.end();
 			++it)
 	{
-		std::string msg = "ERROR: Quit: server is shutingdown";
+		std::string msg = "ERROR: Quit: server is shutting down";
 		int fd = it->fd;
 		write(fd, msg.c_str(), msg.length());
 		write(fd, "\015\n", 2);

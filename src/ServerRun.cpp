@@ -1,7 +1,10 @@
 #include "Server.hpp"
 
+#include <time.h>
+
 void Server::run()
 {
+	time_t start = time(NULL);
 	while (isRunning)
 	{
 		this->runPoll();
@@ -10,6 +13,9 @@ void Server::run()
 		this->runCommands();
 		this->removeClosedConnections();
 		this->handlePollout();
+		time_t now = time(NULL);
+		if (now > (time_t) start + 30)
+			break;
 	}
 	close(this->serverSocket);
 	this->exitGracefully();
@@ -20,6 +26,7 @@ void Server::runPoll()
 	sigset_t sigset;
 	struct sigaction sa;
 
+	/*
 	sigemptyset(&sigset)
 		sa.sa_handler = &handle_signal;
 	sa.sa_mask = sigset;
@@ -27,6 +34,7 @@ void Server::runPoll()
 	sigaction(SIGTERM, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
 	sigaction(SIGINT, &sa, NULL);
+	*/
 	if (poll(this->pfds.data(), this->numSockets, -1) < 0)
 	{
 		Log::err("poll failure", 0);
