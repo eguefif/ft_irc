@@ -2,7 +2,7 @@
 
 void Server::run()
 {
-	while (true)
+	while (isRunning)
 	{
 		this->runPoll();
 		this->handleNewconnection();
@@ -13,6 +13,7 @@ void Server::run()
 		this->removeEmptyChannels();
 	}
 	close(this->serverSocket);
+	this->exitGracefully();
 }
 
 void Server::runPoll()
@@ -46,6 +47,7 @@ void Server::newConnection()
 	clientAddress = inet_ntoa(address.sin_addr);
 	newPfds.fd = fd;
 	newPfds.events = POLLIN | POLLOUT;
+	newPfds.revents = 0;
 	this->pfds.push_back(newPfds);
 	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
 	this->numSockets++;

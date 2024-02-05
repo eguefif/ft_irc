@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <string.h>
+#include <signal.h>
 
 #include <iostream>
 #include <vector>
@@ -23,6 +24,10 @@
 #define MAX_MSG_SIZE 512
 
 ACmd *cmdFactory(std::string cmd, int senderFd, std::string password);
+
+extern bool isRunning;
+
+void handleSignal(int sig);
 
 class Server
 {
@@ -58,6 +63,7 @@ class Server
 		void runListen();
 		void setAddressServerStruct();
 		void initPoll();
+		void initSignal();
 
 		void runPoll();
 		void handleNewconnection();
@@ -74,5 +80,6 @@ class Server
 		void removeClient(const int &fd);
 		void removeEmptyChannels();
 
-		void freeMemory();
+		void exitGracefully();
+
 };
