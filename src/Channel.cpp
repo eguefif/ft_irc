@@ -91,7 +91,7 @@ void Channel::greet(Client *newUser)
 std::string Channel::getTopicMsg(std::string nickname)
 {
 	std::string retval;
-	retval +=	RPL_TOPIC;
+	retval += SERVER_PREFIX + " " + RPL_TOPIC;
 	retval += " " + nickname;
 	retval += " " + this->name;
 	retval += " :" + this->topic;
@@ -220,7 +220,10 @@ void Channel::setTopicOp(bool toSet)
 void Channel::setPassword(bool toSet, std::string pPassword)
 {
 	if (!toSet && this->passwordActivated && this->channelPass == pPassword)
+	{
 		this->passwordActivated = toSet;
+		this->channelPass = "";
+	}
 	if (!this->passwordActivated && toSet)
 	{
 		if (pPassword.length())
@@ -231,7 +234,7 @@ void Channel::setPassword(bool toSet, std::string pPassword)
 	}
 }
 
-void Channel::setOperators(bool toSet, std::string oOperator)
+bool Channel::setOperators(bool toSet, std::string oOperator)
 {
 	if (toSet && this->isUserInChan(oOperator))
 	{
@@ -251,9 +254,13 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 			this->operators.push_back(newop);
 			Log::out("channel " + this->name + " operator: " + oOperator);
 		}
+		else
+			return false;
 	}
 	else
 	{
+		bool flag = false;
+
 		for (std::vector<Client *>::iterator it = this->operators.begin();
 				it != this->operators.end();
 				++it)
@@ -262,10 +269,14 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 			{
 				this->operators.erase(it);
 				Log::out("channel " + this->name + " operator removed: " + oOperator);
+				flag = true;
 				break;
 			}
 		}
+		if (!flag)
+			return false;
 	}
+	return true;
 }
 
 void Channel::setLimit(bool toSet, std::string limit)

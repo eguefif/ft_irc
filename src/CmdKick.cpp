@@ -11,9 +11,9 @@ void CmdKick::execute(std::map<int, Client *> &clientList, std::map<std::string,
 	else
 	{
 		Channel *channel = channelList.find(this->params[0])->second;
+		channel->broadcast(this->createKickMsg(clientList));
 		channel->removeClient(this->params[1]);
 		Log::out(this->params[1] + " was kicked from " + this->params[0]);
-		channel->broadcast(this->createKickMsg(clientList));
 	}
 }
 

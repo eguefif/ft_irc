@@ -197,6 +197,7 @@ void Server::removeEmptyChannels()
 	{
 		if (it->second->getUsersSize() == 0)
 		{
+			Log::out(std::string("removing channel") + " " + it->second->getChannelName());
 			delete it->second;
 			channelToRemove.push_back(it);
 		}

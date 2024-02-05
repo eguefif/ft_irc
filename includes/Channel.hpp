@@ -26,7 +26,7 @@ class Channel
 		void setInviteOnly(bool toSet);
 		void setTopicOp(bool toSet);
 		void setPassword(bool toSet, std::string password);
-		void setOperators(bool toSet, std::string operators);
+		bool  setOperators(bool toSet, std::string operators);
 		void setLimit(bool toSet, std::string limit);
 
 		void addUser(Client *newUser);
