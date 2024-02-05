@@ -88,9 +88,11 @@ std::string CmdPrivMsg::checkError(std::map<int, Client *> &clientList,
 std::string CmdPrivMsg::checkErrorSplit(std::map<int, Client *> &clientList,
 		std::map<std::string, Channel *> &channelList)
 {
+	std::map<std::string, Channel *>::iterator currentChanIt = channelList.find(this->params[0]);
+	Client *receiver = this->getReceiver(clientList, this->params[0]);
 	if (this->params[0][0] == '#')
 	{
-		std::map<std::string, Channel *>::iterator currentChanIt = channelList.find(this->params[0]);
+		std::cout << this->params[0] << std::endl;
 		if (currentChanIt == channelList.end())
 		{
 			return (this->createErrorMsg(
@@ -106,8 +108,7 @@ std::string CmdPrivMsg::checkErrorSplit(std::map<int, Client *> &clientList,
 				ERR_CANNOTSENDTOCHAN_STR));
 		}
 	}
-	Client *receiver = this->getReceiver(clientList, this->params[0]);
-	if (!receiver || !receiver->isRegistered())
+	else if (!receiver || !receiver->isRegistered())
 	{
 		return (this->createErrorMsg(
 			ERR_NOSUCHNICK,
