@@ -43,7 +43,7 @@ std::string CmdQuit::getQuitMsgBroadcast(const std::string &nickname)
 {
 	std::string retval;
 
-	retval += ":" + nickname + " QUIT: quit:";
+	retval += ":" + nickname + " QUIT :quit:";
 	if (this->params.size() >= 1)
 		retval += this->getStringParams();
 	else

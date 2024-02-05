@@ -91,7 +91,7 @@ void Channel::greet(Client *newUser)
 std::string Channel::getTopicMsg(std::string nickname)
 {
 	std::string retval;
-	retval +=	RPL_TOPIC;
+	retval += SERVER_PREFIX + " " + RPL_TOPIC;
 	retval += " " + nickname;
 	retval += " " + this->name;
 	retval += " :" + this->topic;
@@ -220,7 +220,10 @@ void Channel::setTopicOp(bool toSet)
 void Channel::setPassword(bool toSet, std::string pPassword)
 {
 	if (!toSet && this->passwordActivated && this->channelPass == pPassword)
+	{
 		this->passwordActivated = toSet;
+		this->channelPass = "";
+	}
 	if (!this->passwordActivated && toSet)
 	{
 		if (pPassword.length())

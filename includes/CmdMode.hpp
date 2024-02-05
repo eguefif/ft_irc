@@ -24,11 +24,15 @@ class CmdMode: public ACmd
 		std::string checkError(std::map<int, Client *> &clientList,
 				std::map<std::string, Channel *> &channelList);
 
+		std::string replyMsg;
+		std::string replyParams;
+
 		void addFlags(std::string str);
 		std::string handleFlag(std::string str, Channel *currentChannel);
 		std::string getNextArg();
 		std::string getBroadcastMsg(std::string nickname);
 		std::string getChannelMode(std::map<std::string, Channel *> channelList);
+		bool checkUserInChan(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList);
 		
 		std::string channel;
 		std::vector<std::string> flags;

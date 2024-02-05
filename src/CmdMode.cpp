@@ -61,25 +61,40 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 		clientList.find(this->fd)->second->addMsg(errorMsg);
 	else 
 	{
-		std::map<std::string, Channel *>::iterator itChannel = channelList.find(this->channel);
-		if (itChannel == channelList.end())
-			return;
-		Channel *currentChannel = itChannel->second;
-		for (std::vector<std::string>::iterator it = this->flags.begin();
-				it != this->flags.end();
-				++it)
+		std::string msg;
+		Channel *currentChannel = channelList.find(this->channel)->second;
+		if (this->params.size())
 		{
-			std::string wrongNickname = this->handleFlag(*it, currentChannel);
-			if (wrongNickname.length())
-			{
-				std::string msg = this->createErrorMsg(
-						ERR_WASNOSUCHNICK,
-						this->getClientNick(clientList) + " " + wrongNickname,
-						ERR_WASNOSUCHNICK_STR);
-				clientList.find(this->fd)->second->addMsg(msg);
-			}
+		 msg = this->createErrorMsg(
+			RPL_CHANNELMODEIS,
+			this->getClientNick(clientList) + " " + this->channel,
+			this->getChannelMode(channelList));
 		}
-		std::string msg = this->getBroadcastMsg(this->getClientNick(clientList));
+		else
+		{
+			this->replyMsg = std::string(":") + this->getClientNick(clientList) + " " + "MODE";
+			this->replyParams = " :";
+
+			for (std::vector<std::string>::iterator it = this->flags.begin();
+					it != this->flags.end();
+					++it)
+			{
+				std::string wrongNickname = this->handleFlag(*it, currentChannel);
+				if (wrongNickname.length())
+				{
+					std::string msg = this->createErrorMsg(
+							ERR_WASNOSUCHNICK,
+							this->getClientNick(clientList) + " " + wrongNickname,
+							ERR_WASNOSUCHNICK_STR);
+					clientList.find(this->fd)->second->addMsg(msg);
+				}
+
+			}
+			if (this->replyParams.length() > 2)
+				 msg = this->replyMsg + this->replyParams;
+			else
+				 msg = this->replyMsg;
+		}
 		currentChannel->broadcast(msg);
 	}
 }
@@ -89,7 +104,7 @@ std::string CmdMode::getBroadcastMsg(std::string nickname)
 	std::string retval;
 
 	std::vector<std::string>::iterator it = this->params.begin();
-	retval += ":" + nickname + " " + "MODE " + *it + " ";
+	retval += ":" + nickname + " " + "MODE ";
 	++it;
 	retval += *it;
 	++it;
@@ -122,12 +137,15 @@ std::string CmdMode::checkError(std::map<int, Client *> &clientList,
 	}
 	else if (!this->flags.size())
 	{
-		return this->createErrorMsg(
-			RPL_CHANNELMODEIS,
-			this->getClientNick(clientList) + " " + this->channel,
-			this->getChannelMode(channelList));
 	}
 	Channel *channel = channelList.find(this->channel)->second;
+	if (!this->checkUserInChan(clientList.find(this->fd)->second, this->channel, channelList))
+	{
+		return this->createErrorMsg(
+			ERR_NOTONCHANNEL,
+			this->getClientNick(clientList) + " " + this->channel,
+			ERR_NOTONCHANNEL_STR);
+	}
 	if (!channel->isUserOp(clientList.find(this->fd)->second))
 	{
 		return this->createErrorMsg(
@@ -143,6 +161,7 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel)
 	bool toSet;
 	std::string retval;
 	std::string nick;
+	std::string limit;
 
 	if (str[0] == '+')
 		toSet = true;
@@ -151,16 +170,27 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel)
 	switch (str[1])
 	{
 		case 'i': currentChannel->setInviteOnly(toSet);
+				  this->replyMsg += " " + str;
 				  break;
 		case 't': currentChannel->setTopicOp(toSet);
+				  this->replyMsg += " " + str;
 				  break;
 		case 'k': currentChannel->setPassword(toSet, this->getNextArg());
+				  this->replyMsg += " " + str;
 				  break;
 		case 'o': nick = this->getNextArg();
 				  if (!currentChannel->setOperators(toSet, nick))
 				  	retval = nick;
+				  else
+				  {
+				  this->replyMsg += " " + str;
+					this->replyParams += nick + " ";
+				  }
 				  break;
-		case 'l': currentChannel->setLimit(toSet, this->getNextArg());
+		case 'l': limit = this->getNextArg();
+				  currentChannel->setLimit(toSet, limit);
+				  this->replyMsg += str;
+				  this->replyParams += limit + " ";
 				  break;
 	}
 	return retval;
@@ -189,4 +219,11 @@ std::string CmdMode::getChannelMode(std::map<std::string, Channel *> channelList
 		retval = channel->getModeString();
 	}
 	return retval;
+}
+
+bool CmdMode::checkUserInChan(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList)
+{
+	Channel *channel = channelList.find(channelName)->second;
+	std::cout << "Test: " <<  channel->isUserInChan(user) << std::endl;
+	return channel->isUserInChan(user);
 }
