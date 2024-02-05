@@ -62,14 +62,18 @@
 #define ERR_NOSUCHCHANNEL std::string("403")
 #define ERR_NOSUCHCHANNEL_STR std::string("No such channel")
 #define ERR_CANNOTSENDTOCHAN std::string("404")
+#define ERR_CANNOTSENDTOCHAN_STR std::string("Cannot send to channel")
 #define ERR_TOOMANYCHANNELS std::string("405")
 #define ERR_WASNOSUCHNICK std::string("406")
 #define ERR_WASNOSUCHNICK_STR std::string("There was no such nickname")
 
 #define ERR_TOOMANYTARGETS std::string("407")
+#define ERR_TOOMANYTARGETS_STR std::string("Duplicate recipients. No message delivered")
 #define ERR_NOORIGIN std::string("409")
 #define ERR_NORECIPIENT std::string("411")
+#define ERR_NORECIPIENT_STR std::string("No recipient given (PRIVMSG)")
 #define ERR_NOTEXTTOSEND std::string("412")
+#define ERR_NOTEXTTOSEND_STR std::string("No text to send")
 #define ERR_NOTOPLEVEL std::string("413")
 #define ERR_WILDTOPLEVEL std::string("414")
 
