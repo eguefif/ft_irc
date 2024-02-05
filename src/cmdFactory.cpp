@@ -9,8 +9,9 @@
 #include "CmdTopic.hpp"
 #include "CmdMode.hpp"
 #include "CmdKick.hpp"
+#include "CmdPrivMsg.hpp"
 
-# define CMD_LIST_NUMBER 10
+# define CMD_LIST_NUMBER 11
 
 int getIndex(const std::string &cmd);
 
@@ -50,6 +51,9 @@ ACmd *cmdFactory(std::string msg, int senderFd, std::string password)
 		case 8:
 			return new CmdKick(senderFd, msg);
 			break;
+		case 9:
+			return new CmdPrivMsg(senderFd, msg);
+			break;
 	}
 	return 0;
 	
@@ -58,7 +62,7 @@ ACmd *cmdFactory(std::string msg, int senderFd, std::string password)
 int getIndex(const std::string &cmd)
 {
 	std::string commandList[] = {"NICK", "USER", "PASS", "JOIN", "QUIT", "INVITE",
-	"MODE", "TOPIC", "KICK"};
+	"MODE", "TOPIC", "KICK", "PRIVMSG"};
 
 	for (int i = 0; i < CMD_LIST_NUMBER; ++i)
 		if (commandList[i] == cmd)
