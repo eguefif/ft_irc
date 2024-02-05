@@ -82,9 +82,7 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 			{
 				errorMsg = this->handleFlag(*it, currentChannel, clientList);
 				if (errorMsg.length())
-				{
 					clientList.find(this->fd)->second->addMsg(errorMsg);
-				}
 
 			}
 			if (this->replyParams.length() > 2)
@@ -186,6 +184,7 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel, std::m
 							"You must specify a parameter for the key mode. Syntax: <key> ." );
 				  currentChannel->setPassword(toSet, pass);
 				  this->replyMsg += " " + str;
+				  this->replyParams += pass + " ";
 				  break;
 		case 'o': nick = this->getNextArg();
 				  if (!nick.length()) 
