@@ -17,7 +17,8 @@ CmdMode::CmdMode(const int &pFd, const std::string &pMessage): ACmd(pFd, pMessag
 	{
 		for (; it != this->params.end(); ++it)
 		{
-			this->args.push(*it);
+			if ((*it)[0] != '+' && (*it)[0] != '-')
+				this->args.push(*it);
 		}
 	}
 }
@@ -63,30 +64,26 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 	{
 		std::string msg;
 		Channel *currentChannel = channelList.find(this->channel)->second;
-		if (this->params.size())
+		if (!this->flags.size())
 		{
-		 msg = this->createErrorMsg(
+		 	msg = this->createErrorMsg(
 			RPL_CHANNELMODEIS,
 			this->getClientNick(clientList) + " " + this->channel,
 			this->getChannelMode(channelList));
 		}
 		else
 		{
-			this->replyMsg = std::string(":") + this->getClientNick(clientList) + " " + "MODE";
+			this->replyMsg = std::string(":") + this->getClientNick(clientList) + " " + "MODE ";
 			this->replyParams = " :";
 
 			for (std::vector<std::string>::iterator it = this->flags.begin();
 					it != this->flags.end();
 					++it)
 			{
-				std::string wrongNickname = this->handleFlag(*it, currentChannel);
-				if (wrongNickname.length())
+				errorMsg = this->handleFlag(*it, currentChannel, clientList);
+				if (errorMsg.length())
 				{
-					std::string msg = this->createErrorMsg(
-							ERR_WASNOSUCHNICK,
-							this->getClientNick(clientList) + " " + wrongNickname,
-							ERR_WASNOSUCHNICK_STR);
-					clientList.find(this->fd)->second->addMsg(msg);
+					clientList.find(this->fd)->second->addMsg(errorMsg);
 				}
 
 			}
@@ -125,7 +122,7 @@ std::string CmdMode::checkError(std::map<int, Client *> &clientList,
 	{
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
-			this->getClientNick(clientList) + " " + "PASS",
+			this->getClientNick(clientList) + " " + "MODE",
 			ERR_NEEDMOREPARAMS_STR);
 	}
 	else if (this->channel.length() && channelList.find(this->channel) == channelList.end())
@@ -156,12 +153,13 @@ std::string CmdMode::checkError(std::map<int, Client *> &clientList,
 	return std::string();
 }
 
-std::string CmdMode::handleFlag(std::string str, Channel *currentChannel)
+std::string CmdMode::handleFlag(std::string str, Channel *currentChannel, std::map<int, Client *> clientList)
 {
 	bool toSet;
 	std::string retval;
 	std::string nick;
 	std::string limit;
+	std::string pass;
 
 	if (str[0] == '+')
 		toSet = true;
@@ -175,19 +173,38 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel)
 		case 't': currentChannel->setTopicOp(toSet);
 				  this->replyMsg += " " + str;
 				  break;
-		case 'k': currentChannel->setPassword(toSet, this->getNextArg());
+		case 'k': pass = this->getNextArg();
+				  if (!pass.length()) 
+					return this->createErrorMsg(
+							"696",
+							this->getClientNick(clientList) + " " + this->channel + " k *",
+							"You must specify a parameter for the key mode. Syntax: <key> ." );
+				  currentChannel->setPassword(toSet, pass);
 				  this->replyMsg += " " + str;
 				  break;
 		case 'o': nick = this->getNextArg();
+				  if (!nick.length()) 
+					return this->createErrorMsg(
+							"696",
+							this->getClientNick(clientList) + " " + this->channel + " o *",
+							"You must specify a parameter for the key mode. Syntax: <nick> ." );
 				  if (!currentChannel->setOperators(toSet, nick))
-				  	retval = nick;
+					return this->createErrorMsg(
+							ERR_NOSUCHNICK,
+							this->getClientNick(clientList) + " " + nick,
+							ERR_NOSUCHNICK_STR);
 				  else
 				  {
-				  this->replyMsg += " " + str;
+				  	this->replyMsg += " " + str;
 					this->replyParams += nick + " ";
 				  }
 				  break;
 		case 'l': limit = this->getNextArg();
+				  if (!limit.length()) 
+					return this->createErrorMsg(
+							"696",
+							this->getClientNick(clientList) + " " + this->channel + " l *",
+							"You must specify a parameter for the key mode. Syntax: <limit> ." );
 				  currentChannel->setLimit(toSet, limit);
 				  this->replyMsg += str;
 				  this->replyParams += limit + " ";
@@ -224,6 +241,5 @@ std::string CmdMode::getChannelMode(std::map<std::string, Channel *> channelList
 bool CmdMode::checkUserInChan(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList)
 {
 	Channel *channel = channelList.find(channelName)->second;
-	std::cout << "Test: " <<  channel->isUserInChan(user) << std::endl;
 	return channel->isUserInChan(user);
 }
