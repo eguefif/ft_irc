@@ -20,8 +20,7 @@ const std::string &Client::getAddress() const
 
 void Client::addMsg(const std::string &msg)
 {
-	if (this->isRegistered())
-		this->outputQueue.push(msg);
+	this->outputQueue.push(msg);
 }
 
 void Client::addMsgNonRegistered(const std::string &msg)
