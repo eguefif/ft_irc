@@ -118,6 +118,11 @@ std::string CmdMode::getBroadcastMsg(std::string nickname)
 std::string CmdMode::checkError(std::map<int, Client *> &clientList,
 			std::map<std::string, Channel *> &channelList)
 {
+	if (!this->isClientRegistered(clientList))
+		return (this->createErrorMsg(
+					ERR_NOTREGISTERED,
+					this->getClientNick(clientList),
+					ERR_NOTREGISTERED_STR));
 	if (!this->params.size())
 	{
 		return this->createErrorMsg(
