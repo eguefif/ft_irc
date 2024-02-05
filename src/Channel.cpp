@@ -157,6 +157,7 @@ bool Channel::isOperator(Client *user)
 	return false;
 }
 
+
 void Channel::removeClient(Client *user)
 {
 	for (std::vector<Client *>::iterator it = this->operators.begin();
@@ -180,6 +181,31 @@ void Channel::removeClient(Client *user)
 		}
 	}
 }
+
+void Channel::removeClient(std::string nickname)
+{
+	for (std::vector<Client *>::iterator it = this->operators.begin();
+			it != this->operators.end();
+			++it)
+	{
+		if ((*it)->getNickname() == nickname)
+		{
+			this->operators.erase(it);
+			break;
+		}
+	}
+	for (std::vector<Client *>::iterator it = this->users.begin();
+			it != this->users.end();
+			++it)
+	{
+		if ((*it)->getNickname() == nickname)
+		{
+			this->users.erase(it);
+			break;
+		}
+	}
+}
+
 
 void Channel::setInviteOnly(bool toSet)
 {

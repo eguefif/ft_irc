@@ -89,6 +89,7 @@
 #define ERR_NICKCOLLISION std::string("436")
 
 #define ERR_USERNOTINCHANNEL std::string("441")
+#define ERR_USERNOTINCHANNEL_STR std::string("They aren't on that channel")
 #define ERR_NOTONCHANNEL std::string("442")
 #define ERR_NOTONCHANNEL_STR std::string("You're not on that channel")
 #define ERR_USERONCHANNEL std::string("443")
