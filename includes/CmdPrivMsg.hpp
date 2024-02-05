@@ -26,6 +26,7 @@ class CmdPrivMsg : public ACmd
 				std::map<std::string, Channel *> &channelList);
 		std::string createMsg(std::map<int, Client*> &clientList);
 
+		Client *getReceiver(std::map<int, Client*> clientList, std::string receiver);
 		bool hasDuplicateReceivers();
 		std::vector<std::string> receiverList;
 };

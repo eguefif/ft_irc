@@ -25,7 +25,6 @@ void CmdPrivMsg::execute(std::map<int, Client *> &clientList,
 					ERR_NOTREGISTERED_STR));
 	}
 	std::string errorMsg = this->checkError(clientList, channelList);
-	std::cout << "bonjour" << std::endl;
 	if (errorMsg.length())
 	{
 		clientList.find(this->fd)->second->addMsg(errorMsg);
@@ -51,16 +50,7 @@ void CmdPrivMsg::execute(std::map<int, Client *> &clientList,
 		}
 		else
 		{
-			for (std::map<int, Client*>::iterator it;
-					it != clientList.end();
-					++it)
-			{
-				if (it->second->getNickname() == this->params[0])
-				{
-					it->second->addMsg(message);
-					break;
-				}
-			}
+			this->getReceiver(clientList, this->params[0])->addMsg(message);
 		}
 		Log::out("PRIVMSG sent from " + this->getClientNick(clientList)
 				+ " to " + this->params[0]);
@@ -98,10 +88,9 @@ std::string CmdPrivMsg::checkError(std::map<int, Client *> &clientList,
 std::string CmdPrivMsg::checkErrorSplit(std::map<int, Client *> &clientList,
 		std::map<std::string, Channel *> &channelList)
 {
-	std::map<std::string, Channel *>::iterator currentChanIt = channelList.find(this->params[0]);
-	std::map<int, Client *>::iterator currentUserIt = clientList.find(this->fd);
 	if (this->params[0][0] == '#')
 	{
+		std::map<std::string, Channel *>::iterator currentChanIt = channelList.find(this->params[0]);
 		if (currentChanIt == channelList.end())
 		{
 			return (this->createErrorMsg(
@@ -109,7 +98,7 @@ std::string CmdPrivMsg::checkErrorSplit(std::map<int, Client *> &clientList,
 				this->getClientNick(clientList) + " " + this->params[0],
 				ERR_NOSUCHCHANNEL_STR));
 		}
-		if (!currentChanIt->second->isUserInChan(currentUserIt->second))
+		if (!currentChanIt->second->isUserInChan(clientList.find(this->fd)->second))
 		{
 			return (this->createErrorMsg(
 				ERR_CANNOTSENDTOCHAN,
@@ -117,7 +106,8 @@ std::string CmdPrivMsg::checkErrorSplit(std::map<int, Client *> &clientList,
 				ERR_CANNOTSENDTOCHAN_STR));
 		}
 	}
-	if (currentUserIt == clientList.end() || !currentUserIt->second->isRegistered())
+	Client *receiver = this->getReceiver(clientList, this->params[0]);
+	if (!receiver || !receiver->isRegistered())
 	{
 		return (this->createErrorMsg(
 			ERR_NOSUCHNICK,
@@ -157,4 +147,18 @@ bool CmdPrivMsg::hasDuplicateReceivers()
 		}
 	}
 	return false;
+}
+
+Client *CmdPrivMsg::getReceiver(std::map<int, Client*> clientList, std::string receiver)
+{
+	for (std::map<int, Client*>::iterator it = clientList.begin();
+			it != clientList.end();
+			++it)
+	{
+		if (it->second->getNickname() == receiver)
+		{
+			return(it->second);
+		}
+	}
+	return 0;
 }
