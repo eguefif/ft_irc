@@ -32,6 +32,11 @@ void CmdInvite::execute(std::map<int, Client *> &clientList, std::map<std::strin
 
 std::string CmdInvite::checkError(std::map<int, Client *> &clientList, std::map<std::string, Channel *> &channelList)
 {
+	if (!this->isClientRegistered(clientList))
+		return (this->createErrorMsg(
+					ERR_NOTREGISTERED,
+					this->getClientNick(clientList),
+					ERR_NOTREGISTERED_STR));
 	if (this->params.size() < 2)
 		return (this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
