@@ -46,6 +46,16 @@ std::string Channel::getChannelName() const
 	return this->name;
 }
 
+std::string Channel::getTopic() const
+{
+	return this->topic;
+}
+
+void Channel::setTopic(const std::string &pTopic)
+{
+	this->topic = pTopic;
+}
+
 int Channel::getUsersSize() const
 {
 	return this->users.size();
@@ -72,8 +82,20 @@ void Channel::addOperator(Client *newOperator)
 void Channel::greet(Client *newUser)
 {
 	newUser->addMsg(this->newJoinMsg(newUser));
+	if (this->topic.length())
+		newUser->addMsg(this->getTopicMsg(newUser->getNickname()));
 	newUser->addMsg(this->getUserNames(newUser));
 	newUser->addMsg(this->endOfNames(newUser));
+}
+
+std::string Channel::getTopicMsg(std::string nickname)
+{
+	std::string retval;
+	retval +=	RPL_TOPIC;
+	retval += " " + nickname;
+	retval += " " + this->name;
+	retval += " :" + this->topic;
+	return retval;
 }
 
 void Channel::broadcast(std::string msg, Client *sender)
@@ -94,7 +116,6 @@ void Channel::broadcast(std::string msg)
 			++it)
 		(*it)->addMsg(msg);
 }
-
 
 std::string	Channel::newJoinMsg(Client *newUser)
 {
@@ -136,6 +157,7 @@ bool Channel::isOperator(Client *user)
 	return false;
 }
 
+
 void Channel::removeClient(Client *user)
 {
 	for (std::vector<Client *>::iterator it = this->operators.begin();
@@ -159,6 +181,31 @@ void Channel::removeClient(Client *user)
 		}
 	}
 }
+
+void Channel::removeClient(std::string nickname)
+{
+	for (std::vector<Client *>::iterator it = this->operators.begin();
+			it != this->operators.end();
+			++it)
+	{
+		if ((*it)->getNickname() == nickname)
+		{
+			this->operators.erase(it);
+			break;
+		}
+	}
+	for (std::vector<Client *>::iterator it = this->users.begin();
+			it != this->users.end();
+			++it)
+	{
+		if ((*it)->getNickname() == nickname)
+		{
+			this->users.erase(it);
+			break;
+		}
+	}
+}
+
 
 void Channel::setInviteOnly(bool toSet)
 {
@@ -208,7 +255,7 @@ void Channel::setOperators(bool toSet, std::string oOperator)
 	else
 	{
 		for (std::vector<Client *>::iterator it = this->operators.begin();
-				it != this->operators.begin();
+				it != this->operators.end();
 				++it)
 		{
 			if ((*it)->getNickname() == oOperator)

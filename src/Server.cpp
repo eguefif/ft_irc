@@ -106,6 +106,7 @@ void Server::initPoll()
 
 	p.fd = this->serverSocket;
 	p.events = POLLIN;
+	p.revents = 0;
 	this->pfds.push_back(p);
 }
 

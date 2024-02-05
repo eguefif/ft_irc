@@ -19,6 +19,8 @@ class Channel
 		int getChannelMaxSize() const;
 		std::string getChannelPassword() const;
 		std::string getChannelName() const;
+		std::string getTopic() const;
+		void setTopic(const std::string &pTopic);
 		int getUsersSize() const;
 
 		void setInviteOnly(bool toSet);
@@ -34,7 +36,9 @@ class Channel
 		void broadcast(std::string msg);
 		void greet(Client *newUser);
 		void removeClient(Client *user);
+		void removeClient(std::string nickname);
 		void removeInvited(Client *user);
+
 		bool isUserInChan(Client *user);
 		bool isUserInChan(std::string user);
 		bool isUserOp(Client *user);
@@ -48,7 +52,7 @@ class Channel
 		Channel(const Channel &other);
 
 		const std::string name;
-//		std::string &topic;
+		std::string topic;
 		std::vector<Client *> users;
 		std::vector<Client *> operators;
 		std::vector<Client *> invited;
@@ -63,5 +67,7 @@ class Channel
 		std::string getUserNames(Client *newUser);
 		std::string endOfNames(Client *user);
 		bool isOperator(Client *user);
+
+		std::string getTopicMsg(std::string nickname);
 };
 

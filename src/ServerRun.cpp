@@ -1,10 +1,7 @@
 #include "Server.hpp"
 
-#include <time.h>
-
 void Server::run()
 {
-	time_t start = time(NULL);
 	while (isRunning)
 	{
 		this->runPoll();
@@ -13,9 +10,7 @@ void Server::run()
 		this->runCommands();
 		this->removeClosedConnections();
 		this->handlePollout();
-		time_t now = time(NULL);
-		if (now > (time_t) start + 30)
-			break;
+		this->removeEmptyChannels();
 	}
 	close(this->serverSocket);
 	this->exitGracefully();
@@ -23,18 +18,6 @@ void Server::run()
 
 void Server::runPoll()
 {
-	sigset_t sigset;
-	struct sigaction sa;
-
-	/*
-	sigemptyset(&sigset)
-		sa.sa_handler = &handle_signal;
-	sa.sa_mask = sigset;
-	sa.sa_flags = 0;
-	sigaction(SIGTERM, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-	sigaction(SIGINT, &sa, NULL);
-	*/
 	if (poll(this->pfds.data(), this->numSockets, -1) < 0)
 	{
 		Log::err("poll failure", 0);
@@ -64,6 +47,7 @@ void Server::newConnection()
 	clientAddress = inet_ntoa(address.sin_addr);
 	newPfds.fd = fd;
 	newPfds.events = POLLIN | POLLOUT;
+	newPfds.revents = 0;
 	this->pfds.push_back(newPfds);
 	this->clientList.insert(std::pair<int, Client*>(fd, new Client(clientAddress)));
 	this->numSockets++;
@@ -201,5 +185,25 @@ void Server::handlePollout()
 				write(pfds[i].fd, EOM.c_str(), 2);
 			}
 		}
+	}
+}
+
+void Server::removeEmptyChannels()
+{
+	std::vector<std::map<std::string, Channel *>::iterator> channelToRemove;
+
+	for (std::map<std::string, Channel *>::iterator it = this->channelList.begin();
+			it != this->channelList.end(); ++it)
+	{
+		if (it->second->getUsersSize() == 0)
+		{
+			delete it->second;
+			channelToRemove.push_back(it);
+		}
+	}
+	for (std::vector<std::map<std::string, Channel *>::iterator>::iterator it = channelToRemove.begin();
+			it != channelToRemove.end(); ++it)
+	{
+		this->channelList.erase(*it);
 	}
 }

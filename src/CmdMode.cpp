@@ -71,17 +71,17 @@ void CmdMode::execute(std::map<int, Client *> &clientList,
 		{
 			this->handleFlag(*it, currentChannel);
 		}
-		std::string msg = this->getBroadcastMsg();
+		std::string msg = this->getBroadcastMsg(this->getClientNick(clientList));
 		currentChannel->broadcast(msg);
 	}
 }
 
-std::string CmdMode::getBroadcastMsg()
+std::string CmdMode::getBroadcastMsg(std::string nickname)
 {
 	std::string retval;
 
 	std::vector<std::string>::iterator it = this->params.begin();
-	retval += "MODE " + *it + " ";
+	retval += ":" + nickname + " " + "MODE " + *it + " ";
 	++it;
 	retval += *it;
 	++it;
