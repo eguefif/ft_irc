@@ -11,14 +11,19 @@ void CmdKick::execute(std::map<int, Client *> &clientList, std::map<std::string,
 	else
 	{
 		Channel *channel = channelList.find(this->params[0])->second;
+		channel->broadcast(this->createKickMsg(clientList));
 		channel->removeClient(this->params[1]);
 		Log::out(this->params[1] + " was kicked from " + this->params[0]);
-		channel->broadcast(this->createKickMsg(clientList));
 	}
 }
 
 std::string CmdKick::checkError(std::map<int, Client *> &clientList, std::map<std::string, Channel *> &channelList)
 {
+	if (!this->isClientRegistered(clientList))
+		return (this->createErrorMsg(
+					ERR_NOTREGISTERED,
+					this->getClientNick(clientList),
+					ERR_NOTREGISTERED_STR));
 	if (this->params.size() < 2)
 		return this->createErrorMsg(
 			ERR_NEEDMOREPARAMS,
