@@ -25,7 +25,4 @@ class CmdNick : public ACmd
 				std::map<std::string, Channel *> &channelList);
 
 		const std::string getNewNickname();
-
-		bool checkUserInChan(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList);
-		bool checkUserIsOp(Client *user, std::string channelName, std::map<std::string, Channel *> &channelList);
 };
