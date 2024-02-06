@@ -63,6 +63,8 @@ int Channel::getUsersSize() const
 
 void Channel::addUser(Client *newUser)
 {
+	if (this->isUserInChan(newUser))
+		return;
 	this->users.push_back(newUser);
 	this->greet(newUser);
 	this->broadcast(this->newJoinMsg(newUser), newUser);

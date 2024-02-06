@@ -65,8 +65,7 @@ void Server::setupSocket()
 
 void Server::setNonBlockingSocket(const int &fd)
 {
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		Log::err("fcntl error: " + std::to_string(errno), 0);
 }
 

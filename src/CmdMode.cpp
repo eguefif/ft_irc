@@ -204,7 +204,7 @@ std::string CmdMode::handleFlag(std::string str, Channel *currentChannel, std::m
 				  }
 				  break;
 		case 'l': limit = this->getNextArg();
-				  if (!limit.length()) 
+				  if (!limit.length() && toSet) 
 					return this->createErrorMsg(
 							"696",
 							this->getClientNick(clientList) + " " + this->channel + " l *",
