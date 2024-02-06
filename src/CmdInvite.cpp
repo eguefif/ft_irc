@@ -24,6 +24,7 @@ void CmdInvite::execute(std::map<int, Client *> &clientList, std::map<std::strin
 			this->getClientNick(clientList) + " " + this->params[0],
 			this->params[1]);
 		clientList.find(this->fd)->second->addMsg(confirmInviteMsg);
+		invited->addMsg(std::string(":") + this->getClientNick(clientList) + " INVITE " + this->params[1] + " :" + this->params[0]);
 		Log::out(this->getClientNick(clientList)
 		   + " " + "invited" + " " + this->params[0]
 		   + " " + "to channel" + " " + this->params[1]);

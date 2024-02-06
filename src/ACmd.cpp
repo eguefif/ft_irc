@@ -16,9 +16,18 @@ ACmd::ACmd(const int &pFd, const std::string &pMessage): fd(pFd)
 			continue;
 		if (tmp[0] == ':')
 		{
-			this->params.push_back(this->getTrailingParam(
-						(int)streamMsg.tellg() - (int)tmp.length(),
-						pMessage));
+			if (streamMsg.tellg() == -1)
+			{
+				this->params.push_back(this->getTrailingParam(
+							pMessage.length() - tmp.length() + 1,
+							pMessage));
+			}
+			else
+			{
+				this->params.push_back(this->getTrailingParam(
+							(int)streamMsg.tellg() - (int)tmp.length(),
+							pMessage));
+			}
 			break;
 		}
 		else
@@ -32,6 +41,7 @@ std::string ACmd::getTrailingParam(int pos, const std::string &msg)
 
 	try
 	{
+
 		retval = msg.substr(pos, msg.length() - pos);
 	}
 	catch(std::exception &e)

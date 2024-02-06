@@ -120,7 +120,7 @@ std::string CmdPrivMsg::checkErrorSplit(std::map<int, Client *> &clientList,
 
 std::string CmdPrivMsg::createMsg(std::map<int, Client*> &clientList)
 {
-	std::string message = this->getClientNick(clientList) + " PRIVMSG "
+	std::string message = ":" + this->getClientNick(clientList) + " PRIVMSG "
 		+ this->params[0] + " :";
 	for (std::vector<std::string>::iterator it = std::next(params.begin());
 			it != params.end();

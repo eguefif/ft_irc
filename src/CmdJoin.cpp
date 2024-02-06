@@ -95,6 +95,11 @@ std::string CmdJoin::checkError(std::map<int, Client *> &clientList,
 					ERR_NOSUCHCHANNEL,
 					this->getClientNick(clientList) + " " + this->params[0],
 					ERR_NOSUCHCHANNEL_STR));
+	if (params[0].length() < 2)
+		return (this->createErrorMsg(
+					ERR_NOSUCHCHANNEL,
+					this->getClientNick(clientList) + " " + this->params[0],
+					ERR_NOSUCHCHANNEL_STR));
 	if (!isPrint(this->params[0]))
 		return (this->createErrorMsg(
 					ERR_INVALIDCHAR,
