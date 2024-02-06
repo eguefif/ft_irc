@@ -45,11 +45,12 @@ void Client::updateMsg(const std::string &message)
 
 std::string Client::getNextMessage()
 {
-	int pos;
+	size_t pos;
 	std::string msg;
 	std::string sep(EOM);
 
-	if ((pos = this->inputMsg.find_first_of(sep), 0) == std::string::npos)
+	pos = this->inputMsg.find_first_of(sep);
+	if (pos == std::string::npos)
 	{
 		if (this->inputMsg.length() >= 10 * MAX_MSG_SIZE)
 		{
